@@ -1,6 +1,6 @@
 # SG9 Studio Repository
 
-This repository manages NixOS infrastructure configuration for the Wienburg server fleet using a modular, declarative approach with NixOS modules and automated deployment.
+This repository manages the SG9 Studio broadcast/podcast production environment using Ardour 8 DAW with professional FLOSS audio plugins and MIDI controller integration.
 
 ## Your Role
 

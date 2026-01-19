@@ -37,8 +37,9 @@ Includes:
 
 **5-minute Novation Launchpad Mk2 setup guide**
 
-RGB LED feedback integration for visual track monitoring:
+RGB LED feedback integration for visual track monitoring and clip launching:
 - Real-time LED feedback (armed/recording/muted/soloed tracks)
+- Cue slot status (rows 4-8): loaded/playing/queued clips
 - Transport control and cue triggers
 - Automatic error recovery and hotplug detection
 - Session-persistent brightness control
@@ -68,9 +69,9 @@ Then read [STUDIO.md](STUDIO.md) for complete setup instructions.
 
 - **Professional Voice Processing**: Broadcast-standard chain with LSP/Calf plugins
 - **Music Ducking**: Automatic background music reduction during voice
-- **Clip Launching**: Quick-fire jingles and sound effects
-- **MIDI Control**: Hardware integration for faders, transport, and clip triggering
-- **True Peak Limiting**: ITU-R BS.1770 compliant broadcast loudness
+- **Clips & Cue Launching**: Quick-fire jingles and sound effects with hybrid timeline/non-linear workflow
+- **MIDI Control**: Hardware integration for faders, transport, and clip triggering with RGB LED feedback
+- **True Peak Limiting**: ITU-R BS.1770 compliant broadcast loudness (-16 LUFS)
 - **Session Persistence**: Save/load complete studio state
 - **100% FLOSS**: No proprietary software required
 

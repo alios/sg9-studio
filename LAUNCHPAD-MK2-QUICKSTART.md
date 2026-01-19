@@ -82,28 +82,46 @@ cp ~/.config/ardour8/midi_maps/sg9-launchpad-mk2.map ~/.config/ardour8/midi_maps
 ```
 ┌─────────────────────────────────────────────┬──────┐
 │ Top Row: Transport                          │ 89   │
-│ 104  105  106  107  108  109  110  111      │      │
-│ Play Stop Rec  Loop Rew  FFwd Home End      │      │
+│ 104  105  106  107  108  109  110  111      │ Cue A│
+│ Play Stop Rec  Loop Rew  FFwd Home End      │ Scene│
 ├─────────────────────────────────────────────┼──────┤
 │ Row 1: TRACK ARM (Auto RGB Feedback)        │ 79   │
-│  81   82   83   84   85   86   87   88      │ Save │
-│  B1   B2   B3   B4   B5   B6   B7   B8      │      │
+│  81   82   83   84   85   86   87   88      │ Cue B│
+│  B1   B2   B3   B4   B5   B6   B7   B8      │ Scene│
 ├─────────────────────────────────────────────┼──────┤
 │ Row 2: MUTE                                 │ 69   │
-│  71   72   73   74   75   76   77   78      │ Undo │
-│  B1   B2   B3   B4   B5   B6   B7   B8      │      │
+│  71   72   73   74   75   76   77   78      │ Cue C│
+│  B1   B2   B3   B4   B5   B6   B7   B8      │ Scene│
 ├─────────────────────────────────────────────┼──────┤
 │ Row 3: SOLO                                 │ 59   │
-│  61   62   63   64   65   66   67   68      │ Redo │
-│  B1   B2   B3   B4   B5   B6   B7   B8      │      │
+│  61   62   63   64   65   66   67   68      │ Cue D│
+│  B1   B2   B3   B4   B5   B6   B7   B8      │ Scene│
 ├─────────────────────────────────────────────┼──────┤
-│ Row 4-6: Cue Triggers (Ardour 8.0+)         │ ...  │
-│ Row 7: Mixer Navigation                     │ 19   │
-│ Row 8: Markers                              │ 9    │
+│ Row 4: CUE A (Slots 1-8)                    │ 49   │
+│  51   52   53   54   55   56   57   58      │ Cue E│
+│  Jingles/SFX (Auto LED Feedback)            │ Scene│
+├─────────────────────────────────────────────┼──────┤
+│ Row 5: CUE B (Slots 1-8)                    │ 39   │
+│  41   42   43   44   45   46   47   48      │      │
+│  Music Beds (Auto LED Feedback)             │      │
+├─────────────────────────────────────────────┼──────┤
+│ Row 6: CUE C (Slots 1-8)                    │ 29   │
+│  31   32   33   34   35   36   37   38      │      │
+│  SFX/Transitions (Auto LED Feedback)        │      │
+├─────────────────────────────────────────────┼──────┤
+│ Row 7: CUE D (Slots 1-8)                    │ 19   │
+│  21   22   23   24   25   26   27   28      │      │
+│  Ad Breaks/Stingers (Auto LED Feedback)     │      │
+├─────────────────────────────────────────────┼──────┤
+│ Row 8: CUE E (Slots 1-8)                    │      │
+│  11   12   13   14   15   16   17   18      │      │
+│  Outro/Extras (Auto LED Feedback)           │      │
 └─────────────────────────────────────────────┴──────┘
 ```
 
 ## LED Color Meanings
+
+### Track Controls (Rows 1-3)
 
 | Color | State | Example |
 |-------|-------|---------|
@@ -113,6 +131,18 @@ cp ~/.config/ardour8/midi_maps/sg9-launchpad-mk2.map ~/.config/ardour8/midi_maps
 | 🟡 Yellow | Track soloed | Track B3 solo active |
 | 🟢 Green | Track ready (unarmed) | Track B4 idle, ready for input |
 | ⚫ Off | Track inactive or no track | Slot B5 empty or disabled |
+
+### Cue Slots (Rows 4-8)
+
+| Color | State | Example |
+|-------|-------|---------|
+| ⚫ Off | Empty slot (no clip loaded) | Cue A, Slot 1 empty |
+| 🟢 Green (solid) | Clip loaded, ready to trigger | Jingle loaded in Cue A, Slot 1 |
+| 🟢 Green (pulsing) | **Clip playing** | Jingle currently playing |
+| 🟡 Yellow | Clip queued (awaiting quantization) | Clip waiting for beat to trigger |
+| 🔴 Red | Error state | Clip file missing or invalid |
+
+**Note:** Cue LED feedback requires Ardour Lua TriggerBox API (availability varies by Ardour version). If LEDs remain off for cue slots, see [TESTING-CUE-INTEGRATION.md](TESTING-CUE-INTEGRATION.md) for API testing.
 
 ## Manual Actions (Lua Scripts)
 

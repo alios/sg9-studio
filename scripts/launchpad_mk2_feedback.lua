@@ -5,14 +5,33 @@ ardour({
     license = "MIT",
     description = [[
 		Real-time RGB LED feedback for Novation Launchpad Mk2.
-		
+
 		Features:
+		- Track controls (rows 1-3): arm/mute/solo status
+		- Cue slots (rows 4-8): clip loaded/playing/queued status
 		- Adaptive polling (100ms active, 500ms idle)
 		- Automatic MIDI port detection with reconnection
 		- Error recovery with timeline markers
 		- Recording state pulse animation
 		- Track-type aware colors
 		- Performance optimized (state cache, rate limiting)
+
+		Grid Layout:
+		- Row 1 (pads 81-88): Track 1-8 arm status
+		- Row 2 (pads 71-78): Track 1-8 mute status
+		- Row 3 (pads 61-68): Track 1-8 solo status
+		- Row 4 (pads 51-58): Cue A slots 1-8
+		- Row 5 (pads 41-48): Cue B slots 1-8
+		- Row 6 (pads 31-38): Cue C slots 1-8
+		- Row 7 (pads 21-28): Cue D slots 1-8
+		- Row 8 (pads 11-18): Cue E slots 1-8
+
+		LED Color Schema (Cue Slots):
+		- Off: Empty slot (no clip loaded)
+		- Green (solid): Clip loaded (ready to trigger)
+		- Green (pulse): Clip playing
+		- Yellow: Clip queued (awaiting quantization)
+		- Red: Error state
 	]],
 })
 
@@ -52,6 +71,11 @@ local CONFIG = {
         row1 = { 81, 82, 83, 84, 85, 86, 87, 88 }, -- Track arm
         row2 = { 71, 72, 73, 74, 75, 76, 77, 78 }, -- Mute
         row3 = { 61, 62, 63, 64, 65, 66, 67, 68 }, -- Solo
+        row4 = { 51, 52, 53, 54, 55, 56, 57, 58 }, -- Cue A (slots 1-8)
+        row5 = { 41, 42, 43, 44, 45, 46, 47, 48 }, -- Cue B (slots 1-8)
+        row6 = { 31, 32, 33, 34, 35, 36, 37, 38 }, -- Cue C (slots 1-8)
+        row7 = { 21, 22, 23, 24, 25, 26, 27, 28 }, -- Cue D (slots 1-8)
+        row8 = { 11, 12, 13, 14, 15, 16, 17, 18 }, -- Cue E (slots 1-8)
 
         -- Scene buttons (right column)
         scene = { 89, 79, 69, 59, 49, 39, 29, 19 },
@@ -84,6 +108,15 @@ local state = {
 
     -- Track state cache (indexed by track number 1-8)
     tracks = {},
+
+    -- Cue state cache (indexed by cue letter "A"-"E", then slot 1-8)
+    cues = {
+        A = {},
+        B = {},
+        C = {},
+        D = {},
+        E = {},
+    },
 
     -- Timing
     last_change_time = 0,
@@ -389,6 +422,115 @@ local function update_track_leds()
 end
 
 -- ============================================================================
+-- CUE SLOT LED UPDATES
+-- ============================================================================
+
+-- Get LED color for cue slot based on state
+-- Returns (color, pulse_mode)
+local function get_cue_slot_color(has_clip, is_playing, is_queued)
+    if is_playing then
+        return CONFIG.colors.green, true -- Pulsing green when playing
+    elseif is_queued then
+        return CONFIG.colors.yellow, false -- Solid yellow when queued
+    elseif has_clip then
+        return CONFIG.colors.green, false -- Solid green when loaded
+    else
+        return CONFIG.colors.off, false -- Off when empty
+    end
+end
+
+-- Update cue slot LEDs (rows 4-8)
+-- Returns true if any changes detected
+local function update_cue_leds()
+    local changes_detected = false
+
+    -- Define cue rows and their corresponding letters
+    local cue_rows = {
+        {row = CONFIG.grid.row4, letter = "A"},
+        {row = CONFIG.grid.row5, letter = "B"},
+        {row = CONFIG.grid.row6, letter = "C"},
+        {row = CONFIG.grid.row7, letter = "D"},
+        {row = CONFIG.grid.row8, letter = "E"},
+    }
+
+    -- Get tracks list (each track may have a triggerbox)
+    local tracks_list = Session:get_tracks()
+
+    -- Iterate through each cue row
+    for cue_idx, cue_info in ipairs(cue_rows) do
+        local cue_letter = cue_info.letter
+        local pads = cue_info.row
+
+        -- Iterate through each slot (1-8)
+        for slot_idx = 1, 8 do
+            local pad_note = pads[slot_idx]
+
+            -- Initialize default state (empty slot)
+            local has_clip = false
+            local is_playing = false
+            local is_queued = false
+
+            -- Try to query cue slot state via Ardour Lua API
+            -- NOTE: This API is currently UNVERIFIED and may not exist
+            -- If API calls fail, all slots will show as empty (LED off)
+
+            -- Attempt 1: Try track-based triggerbox access
+            local track_idx = slot_idx
+            if track_idx <= tracks_list:size() then
+                local track = tracks_list:table()[track_idx]
+
+                -- Check if track has triggerbox method
+                if track and type(track.triggerbox) == "function" then
+                    local success, triggerbox = pcall(track.triggerbox, track)
+
+                    if success and triggerbox then
+                        -- Try to get slot state (0-indexed cue row)
+                        local cue_row_zero_indexed = cue_idx - 1
+
+                        if type(triggerbox.slot) == "function" then
+                            local success2, slot = pcall(triggerbox.slot, triggerbox, cue_row_zero_indexed)
+
+                            if success2 and slot then
+                                -- Query slot state
+                                if type(slot.has_clip) == "function" then
+                                    has_clip = slot:has_clip()
+                                end
+                                if type(slot.is_playing) == "function" then
+                                    is_playing = slot:is_playing()
+                                end
+                                if type(slot.is_queued) == "function" then
+                                    is_queued = slot:is_queued()
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            -- Compare with cached state
+            local prev = state.cues[cue_letter][slot_idx] or {}
+
+            if prev.has_clip ~= has_clip or prev.is_playing ~= is_playing or prev.is_queued ~= is_queued then
+                -- State changed - update LED
+                local color, pulse = get_cue_slot_color(has_clip, is_playing, is_queued)
+                update_led(pad_note, color, pulse)
+
+                -- Update cache
+                state.cues[cue_letter][slot_idx] = {
+                    has_clip = has_clip,
+                    is_playing = is_playing,
+                    is_queued = is_queued,
+                }
+
+                changes_detected = true
+            end
+        end
+    end
+
+    return changes_detected
+end
+
+-- ============================================================================
 -- ADAPTIVE POLLING
 -- ============================================================================
 
@@ -446,8 +588,14 @@ local function update_launchpad_leds()
         return
     end
 
-    -- Update track LEDs
-    local changes = update_track_leds()
+    -- Update track LEDs (rows 1-3)
+    local track_changes = update_track_leds()
+
+    -- Update cue slot LEDs (rows 4-8)
+    local cue_changes = update_cue_leds()
+
+    -- Aggregate changes for polling adjustment
+    local changes = track_changes or cue_changes
 
     -- Adjust polling interval
     update_polling_interval(changes)

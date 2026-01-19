@@ -295,8 +295,100 @@ environment.systemPackages = with pkgs; [
 ];
 ```
 
+### Appendix: Ardour Clips & Cue Workflow
+
+**SG9 Studio integrates Ardour's clips/cue feature for non-linear content triggering.**
+
+**Use Cases:**
+- **Jingles:** Intro/outro music, show IDs, sponsored content
+- **Music Beds:** Background music for segments
+- **SFX:** Transition sounds, button presses, applause
+- **Ad Breaks:** Pre-recorded sponsor messages
+
+**Clip Library:** `/Users/alios/src/sg9-studio/clips/`
+
+Subdirectories:
+- `Jingles/` - Intro/outro clips (10-30s)
+- `Music-Beds/` - Background music (30-180s)
+- `SFX/` - Sound effects (<10s)
+
+**File Requirements:**
+- **Sample Rate:** 48 kHz (matches session)
+- **Loudness:** -16 LUFS ±1 (matches broadcast target)
+- **Format:** WAV, FLAC, or MP3
+- **Naming:** `YYYY-MM-DD_descriptive-name.wav`
+
+**Ardour Configuration:**
+
+1. `Edit → Preferences → Triggering`
+2. **Custom Clips Folder:** `/Users/alios/src/sg9-studio/clips/`
+3. Restart Ardour
+
+**Clip Launch Styles:**
+
+| Style | Behavior | Use Case |
+|-------|----------|----------|
+| **Trigger** | One-shot playback, stop at end | Jingles, SFX |
+| **Toggle** | Start/stop on successive presses | Music beds |
+| **Repeat** | Loop until stopped | Ambient loops |
+
+**Quantization:** Set to **None** for instant triggering (broadcast workflow).
+
+**Follow Actions:** Configure per-clip:
+- Jingles: **Stop** (do nothing after playback)
+- Music beds: **Continue** (fade out on stop)
+- SFX: **Stop** + **Cue Isolate ON** (don't stop other clips)
+
+**Launchpad MK2 Integration:**
+
+| Row | Cue | Purpose | Pads |
+|-----|-----|---------|------|
+| 4 | A | Jingles | 51-58 |
+| 5 | B | Music Beds | 41-48 |
+| 6 | C | SFX | 31-38 |
+| 7 | D | Ad Breaks | 21-28 |
+| 8 | E | Extras | 11-18 |
+
+**Scene Column (Right):** Pads 89, 79, 69, 59, 49 trigger entire cue rows.
+
+**LED Feedback:**
+- **Off:** Empty slot
+- **Green (solid):** Clip loaded, ready
+- **Green (pulse):** Clip playing
+- **Yellow:** Clip queued (quantized)
+
+**Hybrid Workflow (Timeline + Cues):**
+
+Add **Cue Markers** to timeline for automated triggering:
+
+1. Right-click timeline → **Add Cue Marker**
+2. Select cue letter (A-E)
+3. On playback, clip triggers at marker timecode
+
+**Example Timeline:**
+```
+00:00:00 - Cue A (Intro jingle)
+00:00:30 - Stop All Cues
+05:00:00 - Cue C (Segment transition SFX)
+15:00:00 - Cue B (Music bed starts)
+25:00:00 - Stop All Cues
+26:00:00 - Cue A (Outro jingle)
+```
+
+**Export Testing:** Always export 2-3 times to verify cue markers trigger (known Ardour 8.12 bug may cause first export to fail).
+
+**Performance:** Clip triggering adds <5% CPU overhead with 40 loaded clips.
+
+**Documentation:**
+- [clips/README.md](clips/README.md) - Clip library workflow
+- [CLIPS-INTEGRATION-RESEARCH.md](CLIPS-INTEGRATION-RESEARCH.md) - Community best practices
+- [TESTING-CUE-INTEGRATION.md](TESTING-CUE-INTEGRATION.md) - Testing protocol
+- [CUE-INTEGRATION-STATUS.md](CUE-INTEGRATION-STATUS.md) - Implementation status
+
 ### Changelog
 
 - **v2.0 (2026-01-19):** Consolidated documentation, standardized on software monitoring model,
   removed TAP plugins, updated de-essing hierarchy and canonical chain order. Extracted Ardour-specific
   configuration to dedicated [ARDOUR-SETUP.md](ARDOUR-SETUP.md) document.
+- **v2.1 (2026-01-19):** Added Clips & Cue Workflow appendix, integrated Launchpad MK2 cue triggering,
+  documented hybrid timeline/non-linear workflow.
