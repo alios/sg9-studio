@@ -174,100 +174,375 @@ sudo usermod -a -G audio $USER
 # Log out and back in for changes to take effect
 ```
 
-### 2.5.2 ALSA Scarlett Routing Verification
+### 2.5.2 ALSA Scarlett Routing Configuration (From Scratch)
 
-This is the critical foundation—verify your hardware channel mappings before proceeding.
+This section configures the Vocaster Two's internal routing and mixer **from the "Clear" preset** (factory reset state). The alsa-scarlett-gui provides complete control over the Vocaster's routing matrix and internal mixer—equivalent or superior to Focusrite's proprietary software.
 
-**Step 1: Open alsa-scarlett-gui**
+**What is alsa-scarlett-gui?**
+- GTK4-based GUI for Linux kernel Focusrite USB drivers
+- Full control over routing, mixer, phantom power, gain, and DSP features
+- Settings persist in hardware (survives disconnect/reconnect)
+- Repository: https://github.com/geoffreybennett/alsa-scarlett-gui
+
+**Critical Concepts:**
+- **PC_HW**: Physical hardware inputs/outputs (XLR jacks, headphone outs, etc.)
+- **PC_PCM**: USB audio channels (what Ardour sees as capture/playback)
+- **PC_MIX**: Internal mixer inputs/outputs (for creating custom monitor mixes)
+- **PC_DSP**: DSP-processed signals (Auto Gain, Enhance, Air mode applied)
+- **Sinks can only connect to ONE source** (no mixing at routing stage)
+- **Sources can connect to MULTIPLE sinks** (split signals to multiple destinations)
+
+---
+
+#### **Step 1: System Preparation**
+
+**Disable ALSA state restoration** (prevents conflicts with alsa-scarlett-gui):
+```bash
+sudo systemctl mask alsa-state alsa-restore
+sudo systemctl stop alsa-state alsa-restore
+sudo rm -f /var/lib/alsa/asound.state
+```
+
+**Launch alsa-scarlett-gui:**
 ```bash
 alsa-scarlett-gui
 ```
 
-**Step 2: Verify Aux Input Mapping**
-1. Navigate to the **Levels** tab
-2. Plug a phone/tablet into the **Aux input** (front 3.5mm jack)
-3. Play audio from the device
-4. Observe which **Hardware Input** meters move
-5. Note: This should be **Hardware Inputs 3–4** (stereo pair)
-6. Confirm this maps to **PCM Input 3/4** in the routing matrix
-
-**Step 3: Verify Output Destinations**
-
-The Vocaster Two has two independent stereo output destinations:
-- **Destination A:** Studio monitors + Host headphones (shared controls)
-- **Destination B:** Guest headphones (independent controls)
-
-Verification process:
-1. Open Ardour (or use `speaker-test`)
-2. Send a test tone to **Playback 1–2** only
-3. Confirm audio appears on **studio monitors and Host headphones**
-4. Send a test tone to **Playback 3–4** only
-5. Confirm audio appears on **Guest headphones** only
-
-If this doesn't match:
-- Open **alsa-scarlett-gui → Routing** tab
-- Adjust **PCM Playback** routing to hardware outputs
-- Save the configuration when correct
-
-**Step 4: Configure Routing Matrix**
-
-In **alsa-scarlett-gui → Routing**, set up:
-
-**Sources → PCM Inputs (for Ardour recording):**
-| Source | → | PCM Input | Notes |
-| --- | --- | --- | --- |
-| DSP 1 (Host mic) | → | PCM 1 | Primary voice |
-| DSP 2 (Guest mic) | → | PCM 2 | In-studio guest |
-| Analog 3/4 (Aux) | → | PCM 3/4 | Phone/tablet |
-| Analog 5/6 (Bluetooth) | → | PCM 5/6 | BT audio |
-| Loopback 1 (Mix D) | → | PCM 11/12 | Computer audio/music |
-| Loopback 2 (Mix E) | → | PCM 13/14 | Remote guest (Zoom) |
-
-**PCM Outputs (from Ardour) → Hardware Outputs:**
-| PCM Output | → | Hardware Output | Purpose |
-| --- | --- | --- | --- |
-| PCM 1/2 | → | Monitor L/R + Host HP | Destination A (optional) |
-| PCM 3/4 | → | Guest HP L/R | Destination B (primary monitoring) |
-
-**Step 5: Configure Mix A (N-1 for Remote Calls)**
-
-In **alsa-scarlett-gui → Mixer → Mix A**:
-
-| Source | Level | Why |
-| --- | ---: | --- |
-| DSP 1 (Host) | -6 dB | Remote hears you |
-| DSP 2 (Guest) | -6 dB | Remote hears in-studio guest |
-| Aux 3/4 | -12 dB | Optional phone/tablet to remote |
-| Bluetooth | Muted | Usually not needed |
-| **PCM 1/2** | **Muted** | Critical: prevent echo |
-| **PCM 3/4** | **Muted** | Critical: prevent echo |
-| **Loopback returns** | **Muted** | Critical: prevent feedback |
-
-Route **Mix A** output to your VoIP software (Zoom/Skype) as the input device.
-
-**Step 6: Configure Mix C (Daily Monitoring)**
-
-In **alsa-scarlett-gui → Mixer → Mix C**:
-
-| Source | Level | Why |
-| --- | ---: | --- |
-| DSP monitoring | Muted | Monitor through Ardour instead |
-| Aux 3/4 | 0 dB | Hear phone/tablet input |
-| Bluetooth 5/6 | 0 dB | Hear BT source |
-| Loopback 1 (Mix D) | 0 dB | Hear computer audio |
-| Loopback 2 (Mix E) | 0 dB | Hear remote guest |
-| PCM 3/4 | 0 dB | Hear Ardour output |
-
-Route **Mix C** to the **Guest headphones** output (your primary monitoring).
-
-**Step 7: Save Configuration**
+**Verify device detection:**
+- Window title should show: **"Vocaster Two"**
+- If not detected, check USB connection and kernel driver:
 ```bash
-# alsa-scarlett-gui should auto-save to:
-~/.config/alsa-scarlett-gui/
+lsusb | grep -i focusrite
+# Should show: "Focusrite-Novation Vocaster Two"
 
-# Backup your config
-cp -r ~/.config/alsa-scarlett-gui/ ~/sg9-studio-backup/
+arecord -l | grep -i vocaster
+# Should show card number and device info
 ```
+
+---
+
+#### **Step 2: Load "Clear" Preset (Factory Reset)**
+
+1. In alsa-scarlett-gui, go to **View → Startup**
+2. Click **Reset Configuration**
+3. Confirm the reset—this loads the "Clear" preset
+4. **Result:** All routing sinks set to "Off" (source ID 0), blank routing matrix
+
+**Alternative:** Manually select **Presets → Clear** from the menu (if available)
+
+**What "Clear" does:**
+- Disconnects ALL routing (every sink → "Off")
+- Resets mixer levels to -127 dB (muted)
+- Clears phantom power settings
+- Returns to known blank state
+
+**Confirm Clear State:**
+- Go to **View → Routing** (Ctrl+R)
+- All routing boxes should show **"Off"** or be empty
+- No audio will flow anywhere until you configure routing
+
+---
+
+#### **Step 3: Configure Routing Matrix**
+
+Open **View → Routing** (Ctrl+R). You'll see a matrix with sources (left) and sinks (right).
+
+**3A. Route Microphones to Ardour (PCM Inputs)**
+
+Drag-and-drop or click to connect:
+
+| Source (Left Panel) | → | Sink (Right Panel) | Purpose |
+| --- | --- | --- | --- |
+| **Analogue 1** | → | **PCM 01** | Host mic (hardware input) → Ardour Track 1 |
+| **Analogue 2** | → | **PCM 05** | Guest mic (hardware input) → Ardour Track 5 |
+
+**Note:** We use Analogue 1/2 (raw mic signals) instead of DSP 1/2 to preserve flexibility. Apply processing in Ardour, not in hardware.
+
+**3B. Route Ardour Outputs to Mixer Inputs**
+
+| Source | → | Sink | Purpose |
+| --- | --- | --- | --- |
+| **PCM 01** | → | **Mixer A 01** | Ardour output L → Mixer input 1 |
+| **PCM 02** | → | **Mixer A 02** | Ardour output R → Mixer input 2 |
+
+**3C. Route Mixer Outputs to Headphones/Monitors**
+
+| Source | → | Sink | Purpose |
+| --- | --- | --- | --- |
+| **Mixer A 01** | → | **Analogue 1** | Monitor Left (speakers) |
+| **Mixer A 02** | → | **Analogue 2** | Monitor Right (speakers) |
+| **Mixer B 01** | → | **Analogue 3** | Host Headphones Left |
+| **Mixer B 02** | → | **Analogue 4** | Host Headphones Right |
+| **Mixer C 01** | → | **Analogue 5** | Guest Headphones Left |
+| **Mixer C 02** | → | **Analogue 6** | Guest Headphones Right |
+
+**Vocaster Two Output Mapping:**
+- **Analogue 1/2**: Monitor outputs (rear TRS jacks)
+- **Analogue 3/4**: Headphone Output 1 (Host, front jack)
+- **Analogue 5/6**: Headphone Output 2 (Guest, front jack)
+
+**3D. Setup Loopback for Music/Jingles (Optional but Recommended)**
+
+If you want to record computer audio (music from browser, jingles from external apps):
+
+| Source | → | Sink | Purpose |
+| --- | --- | --- | --- |
+| **PCM 03** | → | **Mixer D 01** | Music source L → Loopback mixer |
+| **PCM 04** | → | **Mixer D 02** | Music source R → Loopback mixer |
+| **Mixer D 01** | → | **PCM 03** | Loopback L → Ardour Capture 3 |
+| **Mixer D 02** | → | **PCM 04** | Loopback R → Ardour Capture 4 |
+
+**How to use loopback:**
+- Point external music player (Spotify, browser) to output to **Vocaster Playback 3+4**
+- Ardour will record this on Track "Music (Loopback)"
+- Prevents re-recording already-imported music (use for live streaming/recording)
+
+**3E. Setup Mix-Minus for Remote Guests (Optional, Advanced)**
+
+For remote calls (Zoom, Skype), create a mix-minus feed (guest hears you, NOT themselves):
+
+| Source | → | Sink | Purpose |
+| --- | --- | --- | --- |
+| **Analogue 1** | → | **Mixer E 01** | Host mic → Mix-Minus L |
+| **Analogue 2** | → | **Mixer E 02** | Guest mic (for routing, NOT for feedback) |
+| **PCM 01** | → | **Mixer E 01** | Ardour music/jingles → Mix-Minus L |
+| **PCM 02** | → | **Mixer E 02** | Ardour music/jingles → Mix-Minus R |
+| **Mixer E 01** | → | **PCM 07** | Mix-Minus L → VoIP software input |
+| **Mixer E 02** | → | **PCM 08** | Mix-Minus R → VoIP software input |
+
+**Then in Mixer (Step 4):** Mute Guest mic in Mix E to create true mix-minus.
+
+---
+
+#### **Step 4: Configure Mixer Levels**
+
+Open **View → Mixer** (Ctrl+M). You'll see Mix A, B, C, D, E, etc. with input faders.
+
+**4A. Mix A (Monitor Speakers)**
+
+This mix feeds your studio monitors.
+
+| Input | Level | Purpose |
+| --- | ---: | --- |
+| **Mixer A 01 (Ardour L)** | **0 dB** | Hear Ardour's processed output |
+| **Mixer A 02 (Ardour R)** | **0 dB** | Hear Ardour's processed output |
+| All other inputs | **-127 dB** (muted) | Clean monitoring, no bleed |
+
+**Why mute mics here?** Monitoring through Ardour (with processing) prevents "double monitoring" and gives you zero-latency processed sound.
+
+**4B. Mix B (Host Headphones)**
+
+Same as Mix A—you and monitors hear the same thing.
+
+| Input | Level | Purpose |
+| --- | ---: | --- |
+| **Mixer B 01 (Ardour L)** | **0 dB** | Hear Ardour output |
+| **Mixer B 02 (Ardour R)** | **0 dB** | Hear Ardour output |
+| All other inputs | **-127 dB** (muted) | Clean monitoring |
+
+**4C. Mix C (Guest Headphones - Independent Mix)**
+
+Guest can have a different balance (e.g., more of their own voice, less music).
+
+**Default: Same as host**
+| Input | Level | Purpose |
+| --- | ---: | --- |
+| **Mixer C 01 (Ardour L)** | **0 dB** | Hear Ardour output |
+| **Mixer C 02 (Ardour R)** | **0 dB** | Hear Ardour output |
+| All other inputs | **-127 dB** (muted) | Clean monitoring |
+
+**Advanced: Guest wants more of themselves**
+| Input | Level | Purpose |
+| --- | ---: | --- |
+| **Analogue 2 (Guest mic)** | **-12 dB** | Direct monitoring of guest mic |
+| **Mixer C 01 (Ardour L)** | **-3 dB** | Ardour output (reduced) |
+| **Mixer C 02 (Ardour R)** | **-3 dB** | Ardour output (reduced) |
+
+**Caution:** Direct monitoring + Ardour monitoring = phase issues. Use sparingly.
+
+**4D. Mix D (Loopback Mixer)**
+
+If using loopback for music capture:
+
+| Input | Level | Purpose |
+| --- | ---: | --- |
+| **Mixer D 01 (PCM 3)** | **0 dB** | Pass music through |
+| **Mixer D 02 (PCM 4)** | **0 dB** | Pass music through |
+| All other inputs | **-127 dB** (muted) | Clean loopback |
+
+**4E. Mix E (Mix-Minus for VoIP)**
+
+**Critical for remote calls—guest hears you, NOT themselves:**
+
+| Input | Level | Purpose |
+| --- | ---: | --- |
+| **Analogue 1 (Host mic)** | **0 dB** | Remote hears you |
+| **Analogue 2 (Guest mic)** | **-127 dB** **(MUTED)** | **Prevents echo/feedback** |
+| **Mixer E 01 (Ardour L)** | **-6 dB** | Remote hears music/jingles |
+| **Mixer E 02 (Ardour R)** | **-6 dB** | Remote hears music/jingles |
+| All other inputs | **-127 dB** (muted) | Clean mix-minus |
+
+**VoIP Software Setup:**
+- **Input Device:** Vocaster Capture 7+8 (Mix E output)
+- **Output Device:** Vocaster Playback 5+6 (or route to Ardour Track 7)
+
+**This creates professional mix-minus:**
+- Remote guest hears: Host mic + music
+- Remote guest does NOT hear: Their own voice (prevents echo)
+
+---
+
+#### **Step 5: Input Controls (Gain, Phantom Power, DSP)**
+
+Open **View → Levels** (Ctrl+L).
+
+**5A. Set Input Gain**
+
+**Method 1: Auto Gain (Easiest)**
+1. Click **Auto Gain** button for Input 1 (Host)
+2. Speak at normal volume for 5 seconds
+3. Vocaster sets optimal gain automatically
+4. Repeat for Input 2 (Guest) if needed
+
+**Method 2: Manual Gain**
+1. Drag **Gain** slider for Input 1
+2. Target: **-18 to -12 dBFS** peak during normal speech
+3. Use Ardour's input meter (or alsa-scarlett-gui's meters) to verify
+
+**5B. Phantom Power (If Using Condenser Mics)**
+
+1. Toggle **48V** button for Input 1 and/or Input 2
+2. **Warning:** Turn phantom power OFF for dynamic mics (SM7B, RE20, etc.)
+3. **Recommendation:** Use dynamic mics for broadcast (no phantom power needed)
+
+**5C. Enhance Presets (Optional)**
+
+Vocaster has built-in voice processing presets:
+- **Off**: No processing (recommended for Ardour workflow)
+- **Warm**: Adds low-end warmth
+- **Bright**: Boosts presence
+- **Radio**: Broadcast-style compression/EQ
+
+**SG9 Studio Recommendation:** Keep Enhance **OFF**—apply all processing in Ardour for maximum control and consistency.
+
+---
+
+#### **Step 6: Save Configuration**
+
+**Auto-Save:**
+alsa-scarlett-gui automatically saves your configuration to:
+```bash
+~/.config/alsa-scarlett-gui/Vocaster_Two.state
+```
+
+**Manual Save:**
+1. **File → Save Configuration**
+2. Choose a descriptive filename: `sg9-studio-vocaster.state`
+3. Store in your project folder:
+```bash
+mv ~/.config/alsa-scarlett-gui/Vocaster_Two.state ~/sg9-studio/vocaster-config.state
+```
+
+**Backup Configuration:**
+```bash
+cp -r ~/.config/alsa-scarlett-gui/ ~/sg9-studio-backup/alsa-scarlett-backup-$(date +%Y%m%d)/
+```
+
+**Load Configuration Later:**
+1. **File → Load Configuration**
+2. Select your `.state` file
+3. Routing and mixer settings restore instantly
+
+**Settings Persistence:**
+Vocaster Two stores settings in hardware—your configuration survives:
+- USB disconnect/reconnect
+- Computer reboots
+- Switching between computers (routing persists in device)
+
+---
+
+#### **Step 7: Verification & Testing**
+
+**7A. Test Microphone Routing**
+```bash
+# In Ardour, arm Track 1 (Host Mic)
+# Speak into mic
+# Verify meters move on Track 1 input
+# Repeat for Track 5 (Guest Mic)
+```
+
+**7B. Test Monitoring Path**
+```bash
+# In Ardour, enable monitoring on Track 1
+# Speak into mic
+# Verify you hear processed audio in headphones/monitors
+# Latency should be minimal (<10ms with 128 buffer)
+```
+
+**7C. Test Loopback (If Configured)**
+```bash
+# Play music in external app (set output to Vocaster Playback 3+4)
+# In Ardour, arm Track "Music (Loopback)"
+# Verify meters move, music records
+```
+
+**7D. Test Mix-Minus (If Configured)**
+```bash
+# Open Zoom/Skype, set input to Vocaster Capture 7+8
+# Start test call
+# Speak into Host mic—remote should hear you
+# Speak into Guest mic—remote should NOT hear (muted in Mix E)
+```
+
+**Common Issues:**
+- **No audio in Ardour:** Check routing (Analogue 1 → PCM 01)
+- **Can't hear monitoring:** Check Mixer A levels, verify Ardour monitoring enabled
+- **Echo in VoIP:** Verify Guest mic muted in Mix E
+- **Loopback not working:** Confirm PCM 3/4 → Mixer D → PCM 3/4 routing
+
+---
+
+#### **Step 8: Disable Focusrite Control 2 (If Previously Used)**
+
+If you previously used Focusrite's proprietary software:
+1. Uninstall Focusrite Control 2 (optional, but prevents conflicts)
+2. **Reset to Factory Defaults** in alsa-scarlett-gui before first use
+3. Do NOT mix alsa-scarlett-gui and Focusrite Control 2 on same system
+
+**Why alsa-scarlett-gui is better:**
+- Full routing matrix control (Focusrite Control has limited routing)
+- Native Linux integration (no proprietary drivers)
+- Session recall (save/load `.state` files)
+- Open source, actively maintained
+
+---
+
+#### **Quick Reference: SG9 Studio Routing Summary**
+
+**Inputs to Ardour:**
+- Analogue 1 → PCM 01 (Host Mic → Track 1)
+- Analogue 2 → PCM 05 (Guest Mic → Track 5)
+- Mixer D → PCM 03/04 (Loopback for music)
+- Mixer E → PCM 07/08 (Mix-Minus for VoIP)
+
+**Ardour Outputs to Monitoring:**
+- PCM 01/02 → Mixer A → Analogue 1/2 (Monitors)
+- PCM 01/02 → Mixer B → Analogue 3/4 (Host Headphones)
+- PCM 01/02 → Mixer C → Analogue 5/6 (Guest Headphones)
+
+**Mixer Levels:**
+- Mix A/B/C: Ardour L/R at 0 dB, all else muted
+- Mix D: PCM 3/4 at 0 dB (loopback pass-through)
+- Mix E: Host mic 0 dB, Guest mic **muted**, Ardour -6 dB (mix-minus)
+
+**Input Gain:**
+- Use Auto Gain or manual to -18 to -12 dBFS peaks
+- Phantom Power OFF (for dynamic mics)
+- Enhance OFF (process in Ardour instead)
+
+**Configuration Files:**
+- Auto-saved: `~/.config/alsa-scarlett-gui/Vocaster_Two.state`
+- Backup: `~/sg9-studio/vocaster-config.state`
 
 ### 2.5.3 MIDI Controller USB Setup
 
@@ -436,9 +711,27 @@ These are Ardour’s **output channels**.
 
 ---
 
-## 4) `alsa-scarlett-gui` Routing (Target Intent)
+## 4) Vocaster Two Routing Philosophy
 
-### 4.1 Core rules
+**Note:** Full step-by-step routing configuration is in Section 2.5.2. This section explains the conceptual foundation of WHY the routing is designed this way.
+
+### 4.1 Core Routing Principles
+
+The Vocaster Two is a sophisticated routing matrix. Via alsa-scarlett-gui, you control:
+
+1. **Hardware I/O → USB Audio**: Physical jacks → Ardour capture channels
+2. **USB Audio → Internal Mixer**: Ardour output → Monitor mixes
+3. **Internal Mixer → Hardware I/O**: Monitor mixes → Headphones/speakers
+
+**Key Principle:**
+> **Route raw mic signals to Ardour. Apply ALL processing in software. Use hardware mixer ONLY for monitoring.**
+
+**Benefits:**
+- Maximum flexibility (change processing after recording)
+- Consistent sound (all processing visible in Ardour)
+- Professional workflow (industry standard DAW-centric approach)
+
+### 4.2 Monitor Through Ardour (WYSIWYG)
 
 - Route the *sources you want to record* to dedicated **PCM Inputs**.
 - Route Ardour outputs to the right **hardware outputs** (guest headphones for daily monitoring).
