@@ -42,17 +42,25 @@ Before starting this guide, ensure:
    - Rolling + not recording: disk monitoring
    - Rolling + recording: input monitoring
 
-### Step 3: Configure I/O Naming (Optional but Recommended)
+### Step 3: Hardware Port Reference
 
-1. Open **Window → Audio Connections**
-2. Click **Hardware** tab
-3. Rename inputs for clarity:
-   - Capture 1 → "Host Mic"
-   - Capture 2 → "Guest Mic"
-   - Capture 3–4 → "Aux L/R"
-   - Capture 5–6 → "Bluetooth L/R"
-   - Capture 11–12 → "Music Loopback L/R"
-   - Capture 13–14 → "Remote Guest L/R"
+**Vocaster Two USB Pro Port Layout:**
+
+The hardware ports appear in Ardour's Audio Connections as:
+
+**Inputs (capture_AUX0 - capture_AUX13):**
+- capture_AUX0 → Host Mic (Analogue 1)
+- capture_AUX1 → Guest Mic (Analogue 2)
+- capture_AUX2-3 → Aux Input L/R (3.5mm jack)
+- capture_AUX4-5 → Bluetooth L/R
+- capture_AUX10-11 → Music Loopback L/R (PCM 03/04 if configured in ALSA)
+- capture_AUX12-13 → Reserved/Unused
+
+**Outputs (playback_AUX0 - playback_AUX3):**
+- playback_AUX0-1 → Monitors L/R + Host HP (Analogue 1/2)
+- playback_AUX2-3 → Guest HP L/R (Analogue 5/6)
+
+**Note:** These port names are defined by the ALSA driver and cannot be renamed in Ardour. Use descriptive **track names** in your session instead (see Track Configuration below).
 
 ### PipeWire Configuration
 
@@ -134,31 +142,36 @@ For more details on the audio stack architecture, see [STUDIO.md Appendix: Audio
 
 ### Step 4: Create Track Hierarchy
 
-**Color Schema:** All track colors follow the [SG9 Color Schema Standard](docs/COLOR-SCHEMA-STANDARD.md) for consistency across Ardour, Launchpad LEDs, and visual feedback.
+**Color Schema:** All track colors follow the SG9 Color Schema (see [Step 20](#step-20-color-schema--visual-design)) for consistency across Ardour, Launchpad LEDs, and visual feedback.
 
-- **Red:** Voice tracks (Host Mic)
-- **Blue:** Guest/auxiliary inputs (Guest Mic, Remote Guest, Aux, Bluetooth)
-- **Cyan:** Technical/loopback (Music Loopback)
-- **Green:** Music content (Music 1/2, Jingles)
+- **Red/Dark Red:** Voice tracks (Host Mic DSP/Raw)
+- **Orange/Dark Orange:** Guest voice (Guest Mic DSP/Raw)
+- **Yellow:** Aux inputs and SFX
+- **Cyan:** Bluetooth, Music Loopback
+- **Purple:** Remote Guest
+- **Green/Light Green:** Music content (Music tracks, Jingles)
 - **Yellow:** SFX tracks
 
-Ardour 8 supports track folders for logical organization. We'll create:
+Ardour 8 uses **Track Groups** (with "Collect Group" feature) for logical organization. We'll create:
 
 ```
-📁 INPUTS (folder)
+🔵 INPUTS (group)
   ├─ Host Mic (DSP)
   ├─ Host Mic (Raw)
-  ├─ Guest Mic
+  ├─ Guest Mic (DSP)
+  ├─ Guest Mic (Raw)
   ├─ Aux Input
   ├─ Bluetooth
   ├─ Remote Guest
   └─ Music Loopback
-📁 CONTENT (folder)
+🟢 CONTENT (group)
   ├─ Music 1
   ├─ Music 2
   ├─ Jingles
   └─ SFX
 ```
+
+**Note:** Ardour doesn't have traditional "folders", but Track Groups with "Collect Group" provide similar organization (tracks visually grouped, can be moved together, share colors).
 
 #### Create Input Tracks
 
@@ -180,35 +193,43 @@ Ardour 8 supports track folders for logical organization. We'll create:
    - Color: Dark Red (#A93226)
    - *Purpose: Raw safety recording without processing*
 
-3. **Guest Mic — Track 3**
+3. **Guest Mic (DSP) — Track 3**
    - Type: Audio Track (Mono)
-   - Name: "Guest Mic"
-   - Input: Capture 2
+   - Name: "Guest Mic (DSP)"
+   - Input: Capture 2 (Guest Mic)
    - I/O Policy: **Strict I/O**
-   - Color: Blue (#3498DB)
+   - Color: Orange (#E67E22)
 
-4. **Aux Input — Track 4**
+4. **Guest Mic (Raw) — Track 4**
+   - Type: Audio Track (Mono)
+   - Name: "Guest Mic (Raw)"
+   - Input: Capture 2 (Guest Mic) — *same as Track 3*
+   - I/O Policy: **Strict I/O**
+   - Color: Dark Orange (#D35400)
+   - *Purpose: Raw safety recording without processing*
+
+5. **Aux Input — Track 5**
    - Type: Audio Track (Stereo)
    - Name: "Aux Input"
    - Input: Capture 3–4
    - I/O Policy: Flexible I/O
-   - Color: Blue (#3498DB)
+   - Color: Yellow (#F39C12)
 
-5. **Bluetooth — Track 5**
+6. **Bluetooth — Track 6**
    - Type: Audio Track (Stereo)
    - Name: "Bluetooth"
    - Input: Capture 5–6
    - I/O Policy: Flexible I/O
    - Color: Cyan (#1ABC9C)
 
-6. **Remote Guest — Track 6**
+7. **Remote Guest — Track 7**
    - Type: Audio Track (Stereo)
    - Name: "Remote Guest"
    - Input: Capture 13–14
    - I/O Policy: Flexible I/O
-   - Color: Blue (#3498DB)
+   - Color: Purple (#9B59B6)
 
-7. **Music Loopback — Track 7**
+8. **Music Loopback — Track 8**
    - Type: Audio Track (Stereo)
    - Name: "Music Loopback"
    - Input: Capture 11–12
@@ -218,18 +239,18 @@ Ardour 8 supports track folders for logical organization. We'll create:
 
 #### Create Content Tracks
 
-8. **Music 1, Music 2 — Tracks 8–9**
+9. **Music 1, Music 2 — Tracks 9–10**
    - Type: Audio Track (Stereo, ×2)
    - Names: "Music 1", "Music 2"
    - Input: None (file playback)
    - Color: Green (#27AE60)
 
-9. **Jingles — Track 10**
-   - Type: Audio Track (Stereo)
-   - Name: "Jingles"
-   - Color: Light Green (#58D68D)
+10. **Jingles — Track 11**
+    - Type: Audio Track (Stereo)
+    - Name: "Jingles"
+    - Color: Light Green (#58D68D)
 
-10. **SFX — Track 11**
+11. **SFX — Track 12**
     - Type: Audio Track (Stereo)
     - Name: "SFX"
     - Color: Yellow (#F1C40F)
@@ -238,45 +259,108 @@ Ardour 8 supports track folders for logical organization. We'll create:
 
 These tracks record continuously for safety/redundancy purposes.
 
-11. **Master Bus Record — Track 12**
+12. **Master Bus Record — Track 13**
     - Type: Audio Track (Stereo)
     - Name: "Master Bus Record"
-    - Input: Master Bus (post-fader send)
+    - Input: Master Bus (post-fader send, configured below)
     - Color: Gray (#95A5A6)
     - **Always armed:** ✅
     - **Purpose:** Record final mix as safety backup (instant export, no bouncing needed)
-    - **Setup:** Create post-fader send from Master bus to this track's input
 
-12. **Mix-Minus Record — Track 13**
+13. **Mix-Minus Record — Track 14**
     - Type: Audio Track (Stereo)
     - Name: "Mix-Minus Record"
-    - Input: Mix-Minus bus (post-fader send)
+    - Input: Mix-Minus bus (post-fader send, configured below)
     - Color: Purple (#9B59B6)
     - **Always armed:** ✅
     - **Purpose:** Record what remote guest heard (for troubleshooting echo/routing issues)
-    - **Setup:** Create post-fader send from Mix-Minus bus (see [Mix-Minus Setup](#step-17-mix-minus-remote-guest-routing))
+
+#### Configure Post-Fader Sends (Critical Setup)
+
+**Important:** Aux sends only work from tracks/busses TO busses, not TO tracks. To record a bus output, we use **direct routing via Audio Connections**.
+
+**For Master Bus Record:**
+
+1. Open **Window → Audio Connections** (or press `Ctrl+P`)
+2. Click the **Ardour Busses** tab at the top
+3. Click the **Ardour Tracks** tab on the left side
+4. Find the **Master** row (in the vertical Busses section)
+5. Find the **Master Bus Record** column (in the horizontal Tracks section)
+6. Click the intersection square to create a green dot
+   - Click **Master L** → **Master Bus Record L**
+   - Click **Master R** → **Master Bus Record R**
+7. Close Audio Connections window
+
+**For Mix-Minus Record:**
+
+1. In Audio Connections, find the **Mix-Minus (Remote Guest)** bus row
+2. Find the **Mix-Minus Record** track column
+3. Click to connect:
+   - Mix-Minus L → Mix-Minus Record L
+   - Mix-Minus R → Mix-Minus Record R
+
+**Alternative Method (via Track Input Button):**
+
+1. In the **Mixer** window, find the **Master Bus Record** track strip
+2. Click the **input button** (shows current input routing)
+3. In the connection menu that appears:
+   - Navigate to **Ardour Busses** section
+   - Check ☑ **Master/out L** and **Master/out R**
+4. Repeat for **Mix-Minus Record** track:
+   - Click its input button
+   - Check ☑ **Mix-Minus (Remote Guest)/out L** and **R**
+
+**Verification:**
+
+- Arm Master Bus Record and Mix-Minus Record tracks
+- Play audio through session
+- Both tracks should show input meters responding
+- Green dots should appear in Audio Connections grid
+- Recording should capture the bus output
+
+**Why Not Aux Sends?**
+
+Aux sends are designed to route **TO** busses (for effects, monitor mixes, etc.), not **TO** tracks. The Ardour manual states: "Notable exceptions are internal aux sends... these cannot be controlled from a patchbay." To record a bus output, you must use **direct output-to-input routing** via the Audio Connections patchbay.
 
 **Benefit of Backup Recording Tracks:**
 - **Master Bus Record:** No post-show bounce needed, instant 2-track export for distribution
 - **Mix-Minus Record:** Diagnose remote guest issues (echo, levels, routing errors)
 - **Disk overhead:** ~16.5 MB/min for both tracks (48kHz/24-bit stereo × 2)
 
-### Step 5: Create Track Folders
+### Step 5: Create Track Groups
 
-1. Select Tracks 1–7 (Host Mic through Music Loopback)
-2. Right-click → **Group → New Group** → Name: "INPUTS"
-3. Right-click on "INPUTS" group → **Convert to Folder**
-4. Select Tracks 8–11 (Music through SFX)
-5. Right-click → **Group → New Group** → Name: "CONTENT"
-6. Right-click on "CONTENT" group → **Convert to Folder**
-7. Select Tracks 12–13 (Master Bus Record, Mix-Minus Record)
-8. Right-click → **Group → New Group** → Name: "BACKUP RECORDINGS"
-9. Right-click on "BACKUP RECORDINGS" group → **Convert to Folder**
+Track groups provide visual organization and synchronized operations.
+
+1. **INPUTS Group**
+   - Select Tracks 1–8 (Host Mic (DSP) through Music Loopback)
+   - Right-click → **Group → New Group**
+   - Name: `INPUTS`
+   - Color: Blue (#3498DB)
+   - Properties dialog → Enable: ☑ Color, ☑ Selection
+
+2. **CONTENT Group**
+   - Select Tracks 9–12 (Music 1 through SFX)
+   - Right-click → **Group → New Group**
+   - Name: `CONTENT`
+   - Color: Green (#27AE60)
+   - Properties: ☑ Color, ☑ Selection
+
+3. **BACKUP RECORDINGS Group**
+   - Select Tracks 13–14 (Master Bus Record, Mix-Minus Record)
+   - Right-click → **Group → New Group**
+   - Name: `BACKUP RECORDINGS`
+   - Color: Gray (#95A5A6)
+   - Properties: ☑ Color, ☑ Selection, ☑ Record Enable
 
 **Track Organization Summary:**
-- **INPUTS folder:** All hardware inputs (mics, aux, remote, loopback)
-- **CONTENT folder:** All file-based playback (music, jingles, SFX)
-- **BACKUP RECORDINGS folder:** Safety recording tracks (always armed)
+- **INPUTS group:** All hardware inputs (mics, aux, remote, loopback)
+- **CONTENT group:** All file-based playback (music, jingles, SFX)
+- **BACKUP RECORDINGS group:** Safety recording tracks (always armed)
+
+**Group Workflow:**
+- **Collect tracks:** Right-click group tab → `Collect Group` → Moves tracks together
+- **Batch selection:** Selecting one track selects all in group (when ☑ Selection enabled)
+- **Visual clarity:** All tracks inherit group color
 
 ### Step 6: Create Bus Structure
 
@@ -290,7 +374,7 @@ These tracks record continuously for safety/redundancy purposes.
 
 2. Route voice tracks to Voice Bus:
    - Host Mic (DSP) → Voice Bus
-   - Guest Mic → Voice Bus
+   - Guest Mic (DSP) → Voice Bus
    - Remote Guest → Voice Bus
    - Aux Input → Voice Bus
 
@@ -314,19 +398,19 @@ VCAs allow unified control of multiple tracks/busses without audio routing.
 1. **Voice VCA**
    - `Ctrl+Shift+N` → Add VCA
    - Name: "Voice Master"
-   - Color: Red (#C0392B)
+   - Color: Pink (#EC7063)
    - Assign: Voice Bus
 
 2. **Music VCA**
    - Add VCA
    - Name: "Music Master"
-   - Color: Green (#229954)
+   - Color: Dark Green (#1E8449)
    - Assign: Music Bus
 
 3. **Master VCA**
    - Add VCA
    - Name: "Master Control"
-   - Color: Gray (#566573)
+   - Color: Black (#1C2833)
    - Assign: Voice Bus, Music Bus, Master Out
 
 **VCA Workflow Benefit:** Adjust Voice Master VCA to control all voice levels simultaneously without affecting individual processing.
@@ -422,7 +506,7 @@ VCAs allow unified control of multiple tracks/busses without audio routing.
 
 Leave this track **empty** (no plugins). This is your safety recording.
 
-### Step 10: Guest Mic Processing Chain
+### Step 10: Guest Mic (DSP) Processing Chain
 
 Use the same chain as Host Mic (DSP) with adjusted parameters:
 
@@ -435,7 +519,12 @@ Use the same chain as Host Mic (DSP) with adjusted parameters:
 
 **Time-Saving Tip:** Copy the entire plugin chain from Host Mic (DSP):
 1. Right-click Host Mic (DSP) processor box → **Copy Processor Configuration**
-2. Right-click Guest Mic processor box → **Paste**
+2. Right-click Guest Mic (DSP) processor box → **Paste**
+3. Fine-tune parameters as needed
+
+### Step 11: Guest Mic (Raw) — No Processing
+
+Leave this track **empty** (no plugins). This is your guest safety recording.
 3. Adjust parameters as listed above
 
 ### Step 11: Remote Guest Processing Chain
@@ -556,7 +645,7 @@ Track groups synchronize operations across multiple tracks.
 
 #### Create Voice Group
 
-1. Select tracks: Host Mic (DSP), Guest Mic, Remote Guest
+1. Select tracks: Host Mic (DSP), Guest Mic (DSP), Remote Guest
 2. Right-click → **Group → New Group**
 3. Name: `Voice Tracks`
 4. Enable properties:
@@ -636,45 +725,83 @@ VCAs provide master control without audio routing.
 
 **Example Workflow:** During intro music, Music Master at 0 dB. When host speaks, automate Music Master to -12 dB (ducking).
 
-### Step 18: Track Folders & Organization
+### Step 18: Track Groups & Visual Organization
 
-Ardour 8 supports track folders for visual organization.
+Track groups provide organization and synchronized operations (created in Step 5).
 
-#### Create Folder Structure
+#### Understanding Track Groups
 
-1. **Inputs Folder**
-   - Select Tracks 1–7 (Host Mic through Music Loopback)
-   - Right-click → **Group → New Group**
-   - Name: `INPUTS`
-   - Right-click group → **Convert to Folder**
-   - Color: Blue (#3498DB)
+Ardour uses **Track Groups** (not collapsible folders). Groups provide:
 
-2. **Content Folder**
-   - Select Tracks 8–11 (Music, Jingles, SFX)
-   - Create group → `CONTENT`
-   - Convert to folder
-   - Color: Green (#27AE60)
+**Visual Benefits:**
+- All tracks inherit group color (visual identification)
+- "Collect Group" function moves tracks together in track list
+- Group tab (colored bar at left of track header) shows membership
 
-3. **Busses Folder (Optional)**
-   - Select: Voice Bus, Music Bus
-   - Create group → `BUSSES`
-   - Convert to folder
-   - Color: Orange (#E67E22)
+**Operational Benefits:**
+- Synchronized selection (edit regions on multiple tracks simultaneously)
+- Synchronized record enable (BACKUP RECORDINGS group)
+- Optional: Synchronized mute, solo, gain, monitoring
 
-#### Folder Benefits
+**Note:** Ardour does **not** have collapsible folder hierarchies like some DAWs. Use Track Groups + "Collect Group" for organization.
 
-- **Visual clarity:** Collapse folders to reduce clutter
-- **Batch operations:** Show/hide entire folders
-- **Consistent layout:** Every session has same structure
+#### Your Existing Groups (from Step 5)
 
-#### Folder Operations
+1. **INPUTS (Blue #3498DB)**
+   - Tracks 1–8: All hardware inputs
+   - Shared: Color, Selection
 
-- **Expand/collapse:** Click triangle icon next to folder name
-- **Move tracks into folder:** Drag track onto folder name
-- **Remove from folder:** Drag track out of folder
-- **Nested folders:** Folders can contain other folders
+2. **CONTENT (Green #27AE60)**
+   - Tracks 9–12: Music, Jingles, SFX
+   - Shared: Color, Selection
 
-**Best Practice:** Use folders + groups + VCAs together for maximum organizational clarity.
+3. **BACKUP RECORDINGS (Gray #95A5A6)**
+   - Tracks 13–14: Master Bus Record, Mix-Minus Record
+   - Shared: Color, Selection, Record Enable
+
+#### Group Operations
+
+**Visual Organization:**
+- Right-click group tab → **Collect Group** → Moves all members together in track list
+- Drag group tab to reorder all members simultaneously
+- Color-coded tracks make groups immediately identifiable
+
+**Batch Operations:**
+- When **☑ Selection** enabled: Selecting one track selects all in group
+- When **☑ Record Enable** enabled: Arming one track arms all in group
+- Enable other properties as needed (Muting, Soloing, Gain)
+
+**Edit Group Properties:**
+1. Right-click group tab → **Edit Group...**
+2. Toggle shared properties:
+   - ☑ Gain (synchronized fader movements)
+   - ☑ Relative (maintain gain differences when syncing gain)
+   - ☑ Muting
+   - ☑ Soloing
+   - ☑ Record Enable
+   - ☑ Color
+   - ☑ Selection
+
+#### VCA vs Track Group Comparison
+
+| Feature | Track Group | VCA |
+|---------|------------|-----|
+| Purpose | Sync any property | Master level control only |
+| Gain control | ☑ (if enabled) | ✅ Always |
+| Mute/Solo sync | ☑ (if enabled) | ❌ No |
+| Color sharing | ✅ Always | ❌ No |
+| Selection sync | ☑ (if enabled) | ❌ No |
+| Use case | Organization + batch ops | Mix automation |
+
+**SG9 Recommendation:**
+- **Track Groups:** Visual organization, batch selection, track management
+- **VCAs:** Real-time mixing, master level control, automation
+
+**Workflow Tips:**
+- Use **Collect Group** to keep related tracks together visually
+- Use **color coding** for quick identification
+- Use **VCAs** for master level control during mixing
+- Enable **☑ Selection** on groups for batch region editing
 
 ### Step 19: Labels & Markers
 
@@ -747,14 +874,15 @@ Consistent colors improve workflow efficiency and reduce cognitive load.
 |----------------|-------|----------|------------------|
 | Host Mic (DSP) | Red | #E74C3C | Primary attention |
 | Host Mic (Raw) | Dark Red | #A93226 | Safety/backup indication |
-| Guest Mic | Orange | #E67E22 | Secondary voice |
+| Guest Mic (DSP) | Orange | #E67E22 | Secondary voice |
+| Guest Mic (Raw) | Dark Orange | #D35400 | Guest safety/backup |
 | Aux Input | Yellow | #F39C12 | External/phone input |
-| Bluetooth | Blue | #3498DB | Wireless connection |
+| Bluetooth | Cyan | #1ABC9C | Wireless connection |
 | Remote Guest | Purple | #9B59B6 | Internet/remote source |
 | Music Loopback | Cyan | #1ABC9C | System audio |
 | Music Tracks | Green | #27AE60 | Content/music |
 | Jingles | Light Green | #58D68D | Short-form content |
-| SFX | Lime | #A9DFBF | Effects/accents |
+| SFX | Yellow | #F1C40F | Effects/accents |
 | Voice Bus | Pink | #EC7063 | Voice submix |
 | Music Bus | Dark Green | #1E8449 | Music submix |
 | Master | Black | #1C2833 | Final output |
@@ -976,10 +1104,11 @@ Create a separate mix for Remote Guest that excludes their own audio.
 
 2. **Route to Mix-Minus**
    - Host Mic (DSP) → Add send (post-fader) → Mix-Minus
-   - Guest Mic → Add send (post-fader) → Mix-Minus
+   - Guest Mic (DSP) → Add send (post-fader) → Mix-Minus
    - Music Bus → Add send (post-fader) → Mix-Minus
    - Aux Input → Add send (post-fader) → Mix-Minus
    - **DO NOT send Remote Guest to Mix-Minus**
+   - **DO NOT send Host Mic (Raw) or Guest Mic (Raw)** (use DSP versions)
 
 3. **Send Mix-Minus to VoIP Software**
    - Open **Window → Audio Connections → Outputs**
@@ -1004,6 +1133,112 @@ If VoIP software doesn't support arbitrary inputs, use system loopback:
 - macOS: BlackHole or Loopback app
 - Windows: VB-Audio Virtual Cable
 
+### Step 23b: Foldback Busses — Independent Headphone Mixes (Optional)
+
+**What are Foldback Busses?**
+
+Foldback busses (also called "cue mixes" or "monitor mixes") provide **independent headphone feeds** for different performers without affecting the main recording or Master bus. Each foldback is a custom mix that can have different levels, EQ, or effects.
+
+**Relationship to SG9 Studio Setup:**
+
+The current SG9 setup uses **Mix-Minus bus** for remote guest monitoring, which is functionally similar to a foldback bus. However, Ardour 8's dedicated **Foldback Bus** feature offers additional benefits:
+
+| Feature | Mix-Minus Bus (Current) | Foldback Bus (Native) |
+|---------|------------------------|----------------------|
+| Purpose | Remote guest only (exclude their voice) | Any independent monitor mix |
+| Pre/Post-fader | Post-fader sends | Pre-fader by default (more flexible) |
+| Hardware routing | Manual JACK routing | Integrated in Ardour's I/O |
+| Multiple mixes | Requires multiple busses | Built-in multi-foldback support |
+| Metering | Standard bus meters | Dedicated foldback meters |
+
+**Should SG9 Studio Use Foldback Busses?**
+
+**Recommendation: Yes, for advanced scenarios** — Adopt foldback busses if you need:
+
+1. **Different monitor content for Host vs Guest:**
+   - Host hears: Full mix with music at normal level
+   - Guest hears: Voice-heavy mix with music ducked -12 dB
+   
+2. **In-room guest with separate headphone mix:**
+   - Host monitors: Reference mix (flat)
+   - Guest monitors: More reverb, less compression (comfort mix)
+
+3. **Multi-guest remote interviews:**
+   - Foldback 1: Guest A (hears Host + Guest B + music, **not** Guest A)
+   - Foldback 2: Guest B (hears Host + Guest A + music, **not** Guest B)
+   - Master: Host (hears everything)
+
+**Implementation Guide:**
+
+1. **Create Foldback Bus**
+   - `Track → Add Track/Bus/VCA`
+   - Template Types dropdown → **Foldback Busses**
+   - Select template (e.g., "Stereo Foldback")
+   - Name: `Foldback: Guest Headphones` or `Foldback: Mix-Minus`
+
+2. **Configure Foldback Routing**
+   - Ardour automatically creates foldback sends on all tracks
+   - Enable sends for tracks you want in this foldback mix
+   - Sends are **pre-fader** by default (performer hears raw levels)
+
+3. **Assign Hardware Output**
+   - Open **Window → Audio Connections → Foldback**
+   - Route foldback output to:
+     - `playback_AUX2-3` (Guest headphones, Analogue 5/6)
+     - Or VoIP software input for remote guests
+
+4. **Adjust Foldback Levels**
+   - Each track has independent foldback send level
+   - Example: Host Mic → Foldback send at 0 dB, Music → -12 dB
+
+**Example: Replace Mix-Minus with Foldback**
+
+Instead of the current Mix-Minus bus + post-fader sends, use:
+
+```
+Foldback Bus: "Remote Guest Monitor"
+├─ Send: Host Mic (DSP) → 0 dB (pre-fader)
+├─ Send: Guest Mic (DSP) → 0 dB (pre-fader)
+├─ Send: Music Bus → -6 dB (ducked)
+├─ Send: Aux Input → 0 dB
+└─ Send: Remote Guest → DISABLED ⚠️ (prevents echo)
+   
+Output → VoIP software input
+```
+
+**Advantages over current Mix-Minus approach:**
+- ✅ Pre-fader sends = independent levels (moving faders doesn't affect guest mix)
+- ✅ Integrated in Ardour's foldback system (better organization)
+- ✅ Scales to multiple guests easily (create Foldback 2, 3, etc.)
+
+**Disadvantages:**
+- ❌ More complex to set up initially
+- ❌ Requires understanding pre-fader vs post-fader sends
+- ❌ Current Mix-Minus workflow already works reliably
+
+**SG9 Studio Decision:**
+
+- **Keep current Mix-Minus bus** for simple workflows (single remote guest)
+- **Adopt Foldback Busses** when:
+  - Recording multi-guest panels (3+ participants)
+  - Host and in-room guest need different monitor mixes
+  - Scaling to professional multi-track studio operations
+
+**Migration Path (Future):**
+
+If adopting foldback busses:
+
+1. Create `Foldback: Remote Guest` (replaces Mix-Minus bus)
+2. Configure pre-fader sends from all tracks except Remote Guest
+3. Route foldback output to VoIP input (same as current Mix-Minus routing)
+4. Update `auto_mix_minus.lua` script to target foldback instead of bus
+5. Test echo-free operation (guest does NOT hear themselves)
+6. Update documentation to reference "Foldback" instead of "Mix-Minus"
+
+**Reference:**
+- Ardour Manual: [Working with Foldback](https://manual.ardour.org/working-with-tracks/foldback/)
+- See also: [`docs/MIX-MINUS-OPERATIONS.md`](docs/MIX-MINUS-OPERATIONS.md) for current workflow
+
 ### Step 24: Session Templates
 
 Save all configuration as a reusable template.
@@ -1015,7 +1250,7 @@ Save all configuration as a reusable template.
    - ☑ MIDI controllers mapped
    - ☑ Monitoring model set to Software Monitoring
    - ☑ Markers/labels created
-   - ☑ Groups and folders organized
+   - ☑ Track groups organized (INPUTS, CONTENT, BACKUP RECORDINGS)
 
 2. **Save as Template**
    - `Session → Save Template`
@@ -1408,16 +1643,18 @@ Consistent colors improve visual navigation:
 |------------|-------|----------|
 | Host Mic (DSP) | Red | #E74C3C |
 | Host Mic (Raw) | Dark Red | #A93226 |
-| Guest Mic | Orange | #E67E22 |
+| Guest Mic (DSP) | Orange | #E67E22 |
+| Guest Mic (Raw) | Dark Orange | #D35400 |
 | Aux Input | Yellow | #F39C12 |
-| Bluetooth | Blue | #3498DB |
+| Bluetooth | Cyan | #1ABC9C |
 | Remote Guest | Purple | #9B59B6 |
 | Music Loopback | Cyan | #1ABC9C |
 | Music Tracks | Green | #27AE60 |
 | Jingles | Light Green | #58D68D |
-| SFX | Lime | #A9DFBF |
+| SFX | Yellow | #F1C40F |
 | Voice Bus | Pink | #EC7063 |
 | Music Bus | Dark Green | #1E8449 |
+| Master | Black | #1C2833 |
 
 **Apply Color:**
 1. Right-click track name → **Properties**
@@ -1521,7 +1758,8 @@ Execute this checklist 5–10 minutes before each recording session:
 3. **☑ Track Arming**
    - Host Mic (DSP): **Armed**
    - Host Mic (Raw): **Armed** (safety recording)
-   - Guest Mic: Armed if local guest present
+   - Guest Mic (DSP): Armed if local guest present
+   - Guest Mic (Raw): Armed if local guest present (safety recording)
    - Remote Guest: Armed if remote guest present
    - Aux Input: Armed if phone/tablet guest present
    - All other tracks: **Disarmed**
