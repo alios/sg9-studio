@@ -479,48 +479,27 @@ local function update_cue_leds()
             if track_idx <= tracks_list:size() then
                 local track = tracks_list:table()[track_idx]
 
-                -- Check if track has triggerbox method
-                if track and type(track.triggerbox) == "function" then
-                    local success, triggerbox = pcall(track.triggerbox, track)
-
-                    if success and triggerbox then
-                        -- Try to get slot state (0-indexed cue row)
-                        local cue_row_zero_indexed = cue_idx - 1
-
-                        if type(triggerbox.slot) == "function" then
-                            local success2, slot = pcall(triggerbox.slot, triggerbox, cue_row_zero_indexed)
-
-                            if success2 and slot then
-                                -- Query slot state
-                                if type(slot.has_clip) == "function" then
-                                    has_clip = slot:has_clip()
-                                end
-                                if type(slot.is_playing) == "function" then
-                                    is_playing = slot:is_playing()
-                                end
-                                if type(slot.is_queued) == "function" then
-                                    is_queued = slot:is_queued()
-                                end
-                            end
-                        end
-                    end
-                end
+                -- ⚠️ TriggerBox Lua API Not Available
+                -- Source: libs/ardour/luabindings.cc does not expose TriggerBox/Trigger classes
+                -- See: LUA-TRIGGERBOX-API.md for full analysis
+                --
+                -- Workaround: Static LED feedback (solid green = MIDI binding active)
+                -- Cannot query: has_clip, is_playing, is_queued states
+                --
+                -- Future: If Ardour exposes TriggerBox API, restore dynamic state tracking
             end
 
-            -- Compare with cached state
+            -- Static LED state (always ready/green)
             local prev = state.cues[cue_letter][slot_idx] or {}
+            local static_state = { has_clip = true, is_playing = false, is_queued = false }
 
-            if prev.has_clip ~= has_clip or prev.is_playing ~= is_playing or prev.is_queued ~= is_queued then
-                -- State changed - update LED
-                local color, pulse = get_cue_slot_color(has_clip, is_playing, is_queued)
+            if prev.has_clip ~= static_state.has_clip then
+                -- Initialize static LED on first run
+                local color, pulse = get_cue_slot_color(true, false, false)  -- Solid green (ready)
                 update_led(pad_note, color, pulse)
 
                 -- Update cache
-                state.cues[cue_letter][slot_idx] = {
-                    has_clip = has_clip,
-                    is_playing = is_playing,
-                    is_queued = is_queued,
-                }
+                state.cues[cue_letter][slot_idx] = static_state
 
                 changes_detected = true
             end
