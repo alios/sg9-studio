@@ -24,25 +24,31 @@ clean I/O and physical volume control.
 ## Quick Start (First-Time Setup)
 
 1. Configure hardware routing in [ALSA routing](#alsa-routing-vocaster--alsa-scarlett-gui).
-2. Configure Ardour audio + monitoring in [Ardour session configuration](#ardour-session-configuration).
-3. Apply the canonical chain in [Processing chains](#processing-chains).
-4. Save a session template and verify loudness in [Loudness-lra--metering](#loudness-lra--metering).
+2. Follow the comprehensive [Ardour 8 Template Setup Guide](ARDOUR-SETUP.md) to configure your session, tracks, busses, VCAs, and processing chains.
+3. Verify loudness targets in [Loudness, LRA, & Metering](#loudness-lra--metering).
 
 ## Signal Flow
 
 ```mermaid
 flowchart LR
     Mic[Mic] --> VocADC[Vocaster ADC]
-    VocADC --> ALSAIn[ALSA Capture]
-    ALSAIn --> ArdIn[Ardour Input]
+    VocADC --> ALSADrv[ALSA Driver]
+    ALSADrv --> PW[PipeWire Audio Server]
+    PW --> JACK[JACK API]
+    JACK --> ArdIn[Ardour Input]
     ArdIn --> Chain[Plugin Chain]
     Chain --> Master[Master Bus]
-    Master --> ALSAOut[ALSA Playback]
+    Master --> JACKOut[JACK API]
+    JACKOut --> PWOut[PipeWire]
+    PWOut --> ALSAOut[ALSA Driver]
     ALSAOut --> VocDAC[Vocaster DAC]
     VocDAC --> Mon[Monitors + Host HP]
     VocDAC --> Guest[Guest HP]
     ArdIn -. "Software monitoring in Ardour" .-> Master
 ```
+
+**Audio Stack:** Hardware (Vocaster) → ALSA driver → PipeWire → JACK API → Ardour  
+**Hardware Routing:** ALSA (via alsa-scarlett-gui) | **Audio Server:** PipeWire | **Ardour Backend:** JACK
 
 ## Hardware Overview
 
@@ -100,105 +106,16 @@ SG9 Studio uses **software monitoring in Ardour**.
 | --- | --- | --- | --- |
 | PCM 03/04 | → | PCM 03/04 | External audio → Ardour loopback track |
 
-## Ardour Session Configuration
+## Ardour Configuration
 
-### Audio + Monitoring
+For complete Ardour 8 session setup including tracks, busses, VCAs, processing chains, MIDI controllers, and modern workflow features, see the [Ardour 8 Template Setup Guide](ARDOUR-SETUP.md).
 
-- Audio System: ALSA
-- Device: Vocaster Two
-- Sample rate: 48 kHz
-- Buffer: 128–256 samples (increase if needed)
-- **Monitoring Model:** Software Monitoring
-- **Auto Input:** Enabled
-
-### Track I/O policy
-
-- **Voice tracks:** Strict I/O (mono stays mono)
-- **Stereo tracks:** Flexible I/O
-
-### Suggested track list (minimal)
-
-| # | Track | Type | Input | Monitor |
-| ---: | --- | --- | --- | --- |
-| 1 | Host Mic (DSP) | Mono | Capture 1 | Auto |
-| 2 | Host Mic (Raw) | Mono | Capture 7 | Auto |
-| 3 | Aux Input | Stereo | Capture 3–4 | Auto |
-| 4 | Bluetooth | Stereo | Capture 5–6 | Auto |
-| 5 | Remote Guest | Stereo | Capture 13–14 | Auto |
-| 6 | Music Loopback | Stereo | Capture 11–12 | Disk |
-| 7+ | Music/Jingles/SFX | Stereo | Files | Disk |
-
-## Canonical Processing Order
-
-**Order:** `HPF → Gate → De-esser (LSP SC) → EQ → Compressor → Limiter`
-
-**Rationale:** HPF removes rumble before gate detection; de-esser before EQ prevents presence boosts
-from amplifying sibilance.
-
-## Processing Chains
-
-### Host Mic (Primary)
-
-| Stage | Plugin | Notes |
-| --- | --- | --- |
-| HPF | LSP EQ x8 | 80–100 Hz, 18 dB/oct |
-| Gate | LSP Gate | Threshold -40 to -35 dB, enable **Hysteresis** |
-| De-esser | **LSP Compressor (SC)** | SC HPF 5–7 kHz, 4:1 ratio |
-| EQ | LSP EQ x8 | Presence +2–6 dB at 3–5 kHz |
-| Compressor | LSP Compressor | 3–4:1 ratio, 10–20 ms attack |
-| Limiter | LSP Limiter | Ceiling -1.0 dBTP, 4–8x oversampling |
-
-**Gate hysteresis tip:** Set hysteresis threshold **6–10 dB below** the main threshold to avoid
-chatter on quiet words.
-
-### Host Mic (Raw Safety)
-
-- Record a second mono track **without** processing.
-- Use only for recovery or reprocessing.
-
-### Remote Guest
-
-| Stage | Plugin | Notes |
-| --- | --- | --- |
-| HPF | LSP EQ x8 | 150–200 Hz |
-| Gate | LSP Gate | Stronger reduction (-30 to -40 dB) |
-| De-esser | LSP Compressor (SC) | 6–8 kHz sidechain |
-| EQ | LSP EQ x8 | Presence boost 2–3 kHz |
-| Compressor | LSP Compressor | 6–8:1 ratio |
-| Limiter | LSP Limiter | Ceiling -1.0 dBTP |
-
-### Aux Input (Phone/Tablet)
-
-- HPF 120–150 Hz
-- Light gate
-- Presence EQ (2–3 kHz)
-- Heavy compression (6–8:1)
-- Limiter
-
-### Music Ducking
-
-- Insert **Calf Sidechain Compressor** on Music Bus
-- Sidechain: Voice Bus send
-- Attack 10–20 ms, Release 300–500 ms, Ratio 4–6:1
-
-### Master Bus
-
-- Gentle glue compression (2–3:1)
-- Limiter ceiling -1.0 dBTP
-- Loudness and true-peak meters
-
-## Controllers
-
-### Korg nanoKONTROL Studio
-
-- Use Ardour Generic MIDI with a custom binding file.
-- Map VCA and bus faders for fast level control.
-
-### Novation Launchpad Pro Mk2
-
-- Use Programmer mode (Port 3).
-- Map clip slots with MIDI Learn.
-- Optional LED feedback via SysEx scripting.
+**Quick reference:**
+- **Monitoring Model:** Software Monitoring (Ardour controls content, Vocaster controls volume)
+- **Audio System:** JACK (via PipeWire) with Vocaster Two
+- **Sample Rate:** 48 kHz
+- **Buffer Size:** 128–256 samples (adjustable based on CPU)
+- **Processing Order:** HPF → Gate → De-esser (LSP SC) → EQ → Compressor → Limiter
 
 ## Loudness, LRA, & Metering
 
@@ -281,17 +198,78 @@ Record a raw, unprocessed mono track in parallel with the processed chain.
 
 ## Appendices
 
-### Appendix: Ardour Monitoring Technical Reference
+### Appendix: Audio Backend Architecture (PipeWire/JACK)
 
-**Monitoring model:** Software Monitoring (global).
+**SG9 Studio uses PipeWire with JACK compatibility layer.**
 
-**Auto Input (recommended):**
+**Audio Stack Layers:**
 
-- Stopped + armed: input monitoring
-- Rolling + not recording: disk monitoring
-- Rolling + recording: input monitoring
+1. **Hardware Layer:** Focusrite Vocaster Two (USB audio interface)
+2. **ALSA Driver:** Low-level kernel driver for hardware communication
+3. **PipeWire:** Modern audio server providing JACK API compatibility
+4. **JACK API:** Industry-standard pro audio interface used by Ardour
+5. **Application Layer:** Ardour 8 DAW
 
-**Per-track monitor mode:** Auto for all input tracks.
+**Key Configuration:**
+
+- **Sample Rate:** 48 kHz (configurable via PipeWire)
+- **Buffer Size:** 128–256 samples (typical for broadcast)
+- **Quantum:** PipeWire's equivalent to JACK buffer size
+- **CPU Governor:** Should be set to "performance" mode for low-latency
+
+**PipeWire Quantum Settings:**
+
+```conf
+# ~/.config/pipewire/pipewire.conf.d/custom.conf
+context.properties = {
+    default.clock.rate = 48000
+    default.clock.quantum = 1024     # Default buffer size
+    default.clock.min-quantum = 32   # Minimum allowed
+    default.clock.max-quantum = 8192 # Maximum allowed
+}
+```
+
+**Why PipeWire + JACK?**
+
+- **Unified Audio:** Single server handles both desktop audio and pro audio
+- **JACK Compatibility:** Ardour sees standard JACK API
+- **Low Latency:** Comparable to native JACK (<10 ms typical)
+- **Session Management:** WirePlumber handles routing and connections
+- **Modern Features:** Better device hotplug, Bluetooth, network audio
+
+**ALSA Routing Coexistence:**
+
+- ALSA layer still handles Vocaster hardware routing (via alsa-scarlett-gui)
+- PipeWire sits above ALSA, providing JACK API to Ardour
+- Hardware routing (PCM → Analogue outputs) configured in ALSA
+- Application routing (Ardour → PipeWire → ALSA → Hardware) handled by PipeWire
+
+**Ardour Backend Selection:**
+
+In Ardour 8.10+, select "JACK/Pipewire" as your audio backend. This connects Ardour to PipeWire's JACK-compatible API.
+
+**Troubleshooting:**
+
+- **High latency:** Reduce quantum size (e.g., 512 → 256)
+- **Xruns/dropouts:** Increase quantum size or set CPU governor to "performance"
+- **Connection issues:** Verify PipeWire services are running: `systemctl --user status pipewire pipewire-pulse wireplumber`
+
+### Appendix: Hardware Monitoring vs Software Monitoring
+
+**SG9 Studio uses Software Monitoring in Ardour.**
+
+**Software Monitoring:**
+- Ardour controls monitoring content (what you hear)
+- Vocaster controls physical loudness only
+- Enables plugin processing in monitor path
+- Slight latency (typically <10 ms at 128 samples)
+
+**Hardware Monitoring (not used):**
+- Interface handles monitoring directly
+- Zero-latency monitoring
+- Cannot hear plugin processing during recording
+
+For detailed Ardour monitoring configuration, see [Ardour 8 Template Setup Guide](ARDOUR-SETUP.md).
 
 ### Appendix: Plugin Technical Reference
 
@@ -320,4 +298,5 @@ environment.systemPackages = with pkgs; [
 ### Changelog
 
 - **v2.0 (2026-01-19):** Consolidated documentation, standardized on software monitoring model,
-  removed TAP plugins, updated de-essing hierarchy and canonical chain order.
+  removed TAP plugins, updated de-essing hierarchy and canonical chain order. Extracted Ardour-specific
+  configuration to dedicated [ARDOUR-SETUP.md](ARDOUR-SETUP.md) document.

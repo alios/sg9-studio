@@ -33,6 +33,18 @@ Includes:
 - Loudness targets, LRA guidance, and metering
 - Troubleshooting and appendices
 
+### 🎛️ [LAUNCHPAD-MK2-QUICKSTART.md](LAUNCHPAD-MK2-QUICKSTART.md)
+
+**5-minute Novation Launchpad Mk2 setup guide**
+
+RGB LED feedback integration for visual track monitoring:
+- Real-time LED feedback (armed/recording/muted/soloed tracks)
+- Transport control and cue triggers
+- Automatic error recovery and hotplug detection
+- Session-persistent brightness control
+
+**Full documentation:** [MIDI-CONTROLLERS.md § Launchpad Mk2 Integration](MIDI-CONTROLLERS.md#launchpad-mk2-integration)
+
 ## Quick Start
 
 ```bash
