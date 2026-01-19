@@ -18,6 +18,32 @@ This repository contains a single, authoritative manual for building and operati
 
 ## Documentation
 
+### 🚨 [HMI-IMPLEMENTATION-GUIDE.md](docs/HMI-IMPLEMENTATION-GUIDE.md)
+
+**Professional broadcast HMI improvements - Installation & Testing**
+
+Complete guide to implementing Phase 1 critical features:
+- PANIC button macro (F1 emergency switch to music)
+- Auto-arm tracks on session load
+- Transport LED feedback on Launchpad
+- Backup recording tracks (Master Bus Record, Mix-Minus Record)
+- VCA layer switching for nanoKONTROL
+- Auto mix-minus routing configuration
+
+**Based on research:** DHD Audio, Lawo diamond, Wheatstone LXE, Axia Livewire+
+
+### 🎨 [COLOR-SCHEMA-STANDARD.md](docs/COLOR-SCHEMA-STANDARD.md)
+
+**Consistent color vocabulary across all interfaces**
+
+Systematic color coding based on professional broadcast HMI research:
+- Pre-attentive perception (color → function recognition)
+- Ardour track colors, Launchpad LED mappings, visual feedback
+- Red = Voice, Blue = Guest, Green = Music, Yellow = SFX
+- State indicators: Armed (solid), Recording (pulse), Muted (orange)
+
+**Implements best practices from:** Lawo diamond, DHD Audio, Wheatstone LXE
+
 ### 📘 [STUDIO.md](STUDIO.md)
 
 **Complete setup and operational manual**
@@ -33,12 +59,25 @@ Includes:
 - Loudness targets, LRA guidance, and metering
 - Troubleshooting and appendices
 
+### 📡 [MIX-MINUS-OPERATIONS.md](docs/MIX-MINUS-OPERATIONS.md)
+
+**Critical workflow for remote guest interviews**
+
+Complete guide to mix-minus (N-1) routing:
+- What is mix-minus and why it's critical
+- Architecture and Ardour routing configuration
+- Pre-show testing procedure (echo check, latency, ducking)
+- Operational workflow (setup, during show, emergency mute)
+- Troubleshooting (echo, latency, VoIP issues)
+- Professional comparison (Axia, Wheatstone, DHD)
+
 ### 🎛️ [LAUNCHPAD-MK2-QUICKSTART.md](LAUNCHPAD-MK2-QUICKSTART.md)
 
 **5-minute Novation Launchpad Mk2 setup guide**
 
 RGB LED feedback integration for visual track monitoring and clip launching:
 - Real-time LED feedback (armed/recording/muted/soloed tracks)
+- Transport status LEDs (play/stop/record/loop)
 - Cue slot status (rows 4-8): loaded/playing/queued clips
 - Transport control and cue triggers
 - Automatic error recovery and hotplug detection

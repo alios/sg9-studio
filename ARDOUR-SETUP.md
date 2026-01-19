@@ -134,6 +134,14 @@ For more details on the audio stack architecture, see [STUDIO.md Appendix: Audio
 
 ### Step 4: Create Track Hierarchy
 
+**Color Schema:** All track colors follow the [SG9 Color Schema Standard](docs/COLOR-SCHEMA-STANDARD.md) for consistency across Ardour, Launchpad LEDs, and visual feedback.
+
+- **Red:** Voice tracks (Host Mic)
+- **Blue:** Guest/auxiliary inputs (Guest Mic, Remote Guest, Aux, Bluetooth)
+- **Cyan:** Technical/loopback (Music Loopback)
+- **Green:** Music content (Music 1/2, Jingles)
+- **Yellow:** SFX tracks
+
 Ardour 8 supports track folders for logical organization. We'll create:
 
 ```
@@ -177,28 +185,28 @@ Ardour 8 supports track folders for logical organization. We'll create:
    - Name: "Guest Mic"
    - Input: Capture 2
    - I/O Policy: **Strict I/O**
-   - Color: Orange (#E67E22)
+   - Color: Blue (#3498DB)
 
 4. **Aux Input — Track 4**
    - Type: Audio Track (Stereo)
    - Name: "Aux Input"
    - Input: Capture 3–4
    - I/O Policy: Flexible I/O
-   - Color: Yellow (#F39C12)
+   - Color: Blue (#3498DB)
 
 5. **Bluetooth — Track 5**
    - Type: Audio Track (Stereo)
    - Name: "Bluetooth"
    - Input: Capture 5–6
    - I/O Policy: Flexible I/O
-   - Color: Blue (#3498DB)
+   - Color: Cyan (#1ABC9C)
 
 6. **Remote Guest — Track 6**
    - Type: Audio Track (Stereo)
    - Name: "Remote Guest"
    - Input: Capture 13–14
    - I/O Policy: Flexible I/O
-   - Color: Purple (#9B59B6)
+   - Color: Blue (#3498DB)
 
 7. **Music Loopback — Track 7**
    - Type: Audio Track (Stereo)
@@ -224,7 +232,34 @@ Ardour 8 supports track folders for logical organization. We'll create:
 10. **SFX — Track 11**
     - Type: Audio Track (Stereo)
     - Name: "SFX"
-    - Color: Lime (#A9DFBF)
+    - Color: Yellow (#F1C40F)
+
+#### Create Backup Recording Tracks
+
+These tracks record continuously for safety/redundancy purposes.
+
+11. **Master Bus Record — Track 12**
+    - Type: Audio Track (Stereo)
+    - Name: "Master Bus Record"
+    - Input: Master Bus (post-fader send)
+    - Color: Gray (#95A5A6)
+    - **Always armed:** ✅
+    - **Purpose:** Record final mix as safety backup (instant export, no bouncing needed)
+    - **Setup:** Create post-fader send from Master bus to this track's input
+
+12. **Mix-Minus Record — Track 13**
+    - Type: Audio Track (Stereo)
+    - Name: "Mix-Minus Record"
+    - Input: Mix-Minus bus (post-fader send)
+    - Color: Purple (#9B59B6)
+    - **Always armed:** ✅
+    - **Purpose:** Record what remote guest heard (for troubleshooting echo/routing issues)
+    - **Setup:** Create post-fader send from Mix-Minus bus (see [Mix-Minus Setup](#step-17-mix-minus-remote-guest-routing))
+
+**Benefit of Backup Recording Tracks:**
+- **Master Bus Record:** No post-show bounce needed, instant 2-track export for distribution
+- **Mix-Minus Record:** Diagnose remote guest issues (echo, levels, routing errors)
+- **Disk overhead:** ~16.5 MB/min for both tracks (48kHz/24-bit stereo × 2)
 
 ### Step 5: Create Track Folders
 
@@ -234,6 +269,14 @@ Ardour 8 supports track folders for logical organization. We'll create:
 4. Select Tracks 8–11 (Music through SFX)
 5. Right-click → **Group → New Group** → Name: "CONTENT"
 6. Right-click on "CONTENT" group → **Convert to Folder**
+7. Select Tracks 12–13 (Master Bus Record, Mix-Minus Record)
+8. Right-click → **Group → New Group** → Name: "BACKUP RECORDINGS"
+9. Right-click on "BACKUP RECORDINGS" group → **Convert to Folder**
+
+**Track Organization Summary:**
+- **INPUTS folder:** All hardware inputs (mics, aux, remote, loopback)
+- **CONTENT folder:** All file-based playback (music, jingles, SFX)
+- **BACKUP RECORDINGS folder:** Safety recording tracks (always armed)
 
 ### Step 6: Create Bus Structure
 

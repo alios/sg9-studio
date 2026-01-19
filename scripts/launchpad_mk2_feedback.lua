@@ -7,24 +7,50 @@ ardour({
 		Real-time RGB LED feedback for Novation Launchpad Mk2.
 
 		Features:
+		- Transport controls (top row): play/stop/record/loop status
 		- Track controls (rows 1-3): arm/mute/solo status
+		- Track-type aware colors (SG9 Color Schema Standard)
 		- Cue slots (rows 4-8): clip loaded/playing/queued status
 		- Adaptive polling (100ms active, 500ms idle)
 		- Automatic MIDI port detection with reconnection
 		- Error recovery with timeline markers
 		- Recording state pulse animation
-		- Track-type aware colors
 		- Performance optimized (state cache, rate limiting)
 
 		Grid Layout:
-		- Row 1 (pads 81-88): Track 1-8 arm status
-		- Row 2 (pads 71-78): Track 1-8 mute status
-		- Row 3 (pads 61-68): Track 1-8 solo status
+		- Top Row (pads 104-111): Transport controls
+		  - 104: Play/Pause (green=playing)
+		  - 105: Stop (red=stopped)
+		  - 106: Record (red pulse=recording, orange=armed)
+		  - 107: Loop (yellow=enabled)
+		  - 108-111: Reserved
+		- Row 1 (pads 81-88): Track 1-8 arm status (track-type colors)
+		- Row 2 (pads 71-78): Track 1-8 mute status (orange)
+		- Row 3 (pads 61-68): Track 1-8 solo status (yellow)
 		- Row 4 (pads 51-58): Cue A slots 1-8
 		- Row 5 (pads 41-48): Cue B slots 1-8
 		- Row 6 (pads 31-38): Cue C slots 1-8
 		- Row 7 (pads 21-28): Cue D slots 1-8
 		- Row 8 (pads 11-18): Cue E slots 1-8
+
+		LED Color Schema (Transport - Top Row):
+		- Green: Playing/active state
+		- Red: Stopped/recording state (pulse when recording)
+		- Orange: Record armed (not recording)
+		- Yellow: Loop enabled
+		- Off: Inactive
+
+		LED Color Schema (Track Arm - Row 1):
+		- Red: Voice tracks armed (Host Mic)
+		- Blue: Guest/aux inputs armed (Guest, Remote, Aux, Bluetooth)
+		- Green: Music tracks armed (Music, Jingles)
+		- Yellow: SFX tracks armed
+		- Red (pulse): Recording in progress
+
+		LED Color Schema (Track States - Rows 2-3):
+		- Orange: Muted (row 2)
+		- Yellow: Soloed (row 3)
+		- Off: Normal state
 
 		LED Color Schema (Cue Slots):
 		- Off: Empty slot (no clip loaded)
@@ -32,6 +58,8 @@ ardour({
 		- Green (pulse): Clip playing
 		- Yellow: Clip queued (awaiting quantization)
 		- Red: Error state
+
+		See: docs/COLOR-SCHEMA-STANDARD.md for complete color vocabulary
 	]],
 })
 
@@ -345,18 +373,42 @@ end
 -- LED UPDATE LOGIC
 -- ============================================================================
 
+-- Get base color for track type (based on SG9 Color Schema Standard)
+local function get_track_base_color(track_name)
+    -- Voice tracks (red family)
+    if string.match(track_name, "Host Mic") then
+        return CONFIG.colors.red
+    -- Guest/auxiliary inputs (blue)
+    elseif string.match(track_name, "Guest") or string.match(track_name, "Remote") or
+           string.match(track_name, "Aux") or string.match(track_name, "Bluetooth") then
+        return CONFIG.colors.blue
+    -- Music tracks (green)
+    elseif string.match(track_name, "Music") or string.match(track_name, "Jingle") then
+        return CONFIG.colors.green
+    -- SFX (yellow)
+    elseif string.match(track_name, "SFX") then
+        return CONFIG.colors.yellow
+    -- Loopback/technical (cyan - fallback to blue if not in palette)
+    elseif string.match(track_name, "Loopback") then
+        return CONFIG.colors.blue  -- Cyan (37) may not be in basic palette
+    else
+        return CONFIG.colors.green  -- Default: green for ready
+    end
+end
+
 -- Determine LED color for a track based on state
-local function get_track_led_color(rec_enabled, muted, soloed, is_recording)
+local function get_track_led_color(track_name, rec_enabled, muted, soloed, is_recording)
     if is_recording then
-        return CONFIG.colors.red, true -- Pulse for recording
+        return CONFIG.colors.red, true -- Pulse for recording (always red regardless of type)
     elseif rec_enabled then
-        return CONFIG.colors.red, false -- Solid for armed
+        -- Use track-type color when armed
+        return get_track_base_color(track_name), false
     elseif muted then
         return CONFIG.colors.orange, false
     elseif soloed then
         return CONFIG.colors.yellow, false
     else
-        return CONFIG.colors.green, false -- Ready/idle
+        return CONFIG.colors.green, false -- Ready/idle (generic green)
     end
 end
 
@@ -382,6 +434,9 @@ local function update_track_leds()
             break
         end -- Only first 8 tracks
 
+        -- Get track name for color determination
+        local track_name = track:name()
+
         -- Get current track state
         local rec_ctrl = track:rec_enable_control()
         local mute_ctrl = track:mute_control()
@@ -399,7 +454,7 @@ local function update_track_leds()
 
         if prev.rec ~= rec_enabled or prev.mute ~= muted or prev.solo ~= soloed or prev.recording ~= is_recording then
             -- State changed - update LED
-            local color, pulse = get_track_led_color(rec_enabled, muted, soloed, is_recording)
+            local color, pulse = get_track_led_color(track_name, rec_enabled, muted, soloed, is_recording)
 
             -- Update row 1 (arm status)
             update_led(CONFIG.grid.row1[track_idx], color, pulse)
@@ -510,6 +565,84 @@ local function update_cue_leds()
 end
 
 -- ============================================================================
+-- TRANSPORT LED UPDATES
+-- ============================================================================
+
+-- Update transport row LEDs (top row, pads 104-111)
+-- Returns true if any changes detected
+local function update_transport_leds()
+    local session = Session
+    local changes_detected = false
+
+    -- Get transport state
+    local transport_state = {
+        playing = session:transport_rolling(),
+        recording = session:actively_recording(),
+        rec_enabled = session:get_record_enabled(),
+        loop_enabled = session:get_play_loop(),
+    }
+
+    -- Cache for previous state (initialize if needed)
+    state.transport = state.transport or {}
+    local prev = state.transport
+
+    -- Pad 104: Play/Pause
+    local play_color = transport_state.playing and CONFIG.colors.green or CONFIG.colors.off
+    if prev.play_color ~= play_color then
+        update_led(CONFIG.grid.top_row[1], play_color, false)  -- Solid green when playing
+        prev.play_color = play_color
+        changes_detected = true
+    end
+
+    -- Pad 105: Stop
+    local stop_color = (not transport_state.playing) and CONFIG.colors.red or CONFIG.colors.off
+    if prev.stop_color ~= stop_color then
+        update_led(CONFIG.grid.top_row[2], stop_color, false)  -- Solid red when stopped
+        prev.stop_color = stop_color
+        changes_detected = true
+    end
+
+    -- Pad 106: Record
+    local rec_color, rec_pulse
+    if transport_state.recording then
+        rec_color = CONFIG.colors.red
+        rec_pulse = true  -- Pulsing red when recording
+    elseif transport_state.rec_enabled then
+        rec_color = CONFIG.colors.orange
+        rec_pulse = false  -- Solid orange when armed but not recording
+    else
+        rec_color = CONFIG.colors.off
+        rec_pulse = false
+    end
+
+    if prev.rec_color ~= rec_color or prev.rec_pulse ~= rec_pulse then
+        update_led(CONFIG.grid.top_row[3], rec_color, rec_pulse)
+        prev.rec_color = rec_color
+        prev.rec_pulse = rec_pulse
+        changes_detected = true
+    end
+
+    -- Pad 107: Loop
+    local loop_color = transport_state.loop_enabled and CONFIG.colors.yellow or CONFIG.colors.off
+    if prev.loop_color ~= loop_color then
+        update_led(CONFIG.grid.top_row[4], loop_color, false)  -- Solid yellow when loop enabled
+        prev.loop_color = loop_color
+        changes_detected = true
+    end
+
+    -- Pads 108-111: Reserved for future use (keep off for now)
+    for i = 5, 8 do
+        if not prev["reserved_" .. i] then
+            update_led(CONFIG.grid.top_row[i], CONFIG.colors.off, false)
+            prev["reserved_" .. i] = true
+        end
+    end
+
+    state.transport = prev
+    return changes_detected
+end
+
+-- ============================================================================
 -- ADAPTIVE POLLING
 -- ============================================================================
 
@@ -567,6 +700,9 @@ local function update_launchpad_leds()
         return
     end
 
+    -- Update transport row LEDs (top row)
+    local transport_changes = update_transport_leds()
+
     -- Update track LEDs (rows 1-3)
     local track_changes = update_track_leds()
 
@@ -574,7 +710,7 @@ local function update_launchpad_leds()
     local cue_changes = update_cue_leds()
 
     -- Aggregate changes for polling adjustment
-    local changes = track_changes or cue_changes
+    local changes = transport_changes or track_changes or cue_changes
 
     -- Adjust polling interval
     update_polling_interval(changes)

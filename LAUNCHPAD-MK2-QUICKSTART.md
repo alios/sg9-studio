@@ -77,6 +77,29 @@ cp ~/.config/ardour8/midi_maps/sg9-launchpad-mk2.map ~/.config/ardour8/midi_maps
 
 ✅ **Success!** If LEDs respond correctly, integration is working.
 
+## LED Color Schema
+
+SG9 Studio uses consistent colors across all interfaces (see [Color Schema Standard](docs/COLOR-SCHEMA-STANDARD.md)):
+
+**Track Status (Row 1 - Armed):**
+- **Red:** Voice tracks armed (Host Mic)
+- **Blue:** Guest tracks armed (Guest Mic, Remote Guest, Aux)
+- **Green:** Music/content tracks armed (Music, Jingles)
+- **Yellow:** SFX tracks armed
+- **Red (pulsing):** Track actively recording
+- **Off:** Track disarmed
+
+**Track Operations (Rows 2-3):**
+- **Orange (solid):** Track muted (Row 2)
+- **Yellow (solid):** Track soloed (Row 3)
+- **Off:** Not muted/soloed
+
+**Cue Slots (Rows 4-8):**
+- **Green (solid):** Clip loaded, ready
+- **Green (pulse):** Clip playing
+- **Yellow:** Clip queued (awaiting trigger)
+- **Off:** Empty slot
+
 ## Grid Layout Cheat Sheet
 
 ```
