@@ -1,0 +1,28 @@
+# Markdownlint configuration
+# See: https://github.com/DavidAnson/markdownlint
+
+# Default state for all rules
+default: true
+
+# MD013/line-length - Line length
+MD013:
+  line_length: 120
+  code_blocks: false
+  tables: false
+
+# MD029/ol-prefix - Ordered list item prefix
+MD029:
+  style: "ordered"
+
+# MD033/no-inline-html - Inline HTML
+MD033:
+  allowed_elements:
+    - br
+    - kbd
+    - sup
+    - sub
+
+# MD060/table-column-style - Table column style
+# This repo prefers ASCII-art aligned pipe tables for readability.
+MD060:
+  style: "aligned"

@@ -1,0 +1,15 @@
+# mdformat configuration
+#
+# Key goals for this repo:
+# - Stay compatible with markdownlint's MD029 "ordered" list style
+# - Preserve "ASCII-art" aligned pipe tables (no table compaction)
+
+wrap = "keep"
+number = true
+end_of_line = "lf"
+validate = true
+
+# Only relevant if you use the mdformat-gfm `tables` plugin.
+# When set to true, it strips alignment spaces and "compresses" tables.
+[plugin.tables]
+compact_tables = false

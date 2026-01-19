@@ -1,0 +1,49 @@
+
+## File system
+.DS_Store
+desktop.ini
+
+## Editor
+*.swp
+*.swo
+Session.vim
+.cproject
+.idea
+toolchains/
+*.iml
+.project
+.favorites.json
+.settings/
+
+## Build
+/target
+/result
+.direnv
+
+## Serena (keep config committed)
+/.serena/*
+!/.serena/project.yml
+!/.serena/.gitignore
+
+# Track Cargo.lock for reproducible builds in workspace
+!/Cargo.lock
+
+## Temporary files
+*~
+\#*
+\#*\#
+.#*
+
+## sops
+*.dec
+secrets/*.yaml.dec
+
+## Tags
+tags
+tags.*
+TAGS
+TAGS.*
+
+
+# Before adding new lines, see the comment at the top.
+
