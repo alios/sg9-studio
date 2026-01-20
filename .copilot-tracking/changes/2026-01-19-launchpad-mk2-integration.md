@@ -231,8 +231,8 @@ aseqdump -p "Virtual Raw MIDI 1"
 
 ## Quick Links
 
-- **Quick Start:** [LAUNCHPAD-MK2-QUICKSTART.md](LAUNCHPAD-MK2-QUICKSTART.md)
-- **Full Documentation:** [MIDI-CONTROLLERS.md § Launchpad Mk2 Integration](MIDI-CONTROLLERS.md#launchpad-mk2-integration)
-- **Studio Manual:** [STUDIO.md](STUDIO.md)
-- **Ardour Template Setup:** [ARDOUR-SETUP.md](ARDOUR-SETUP.md)
-- **Progress Tracking:** [.copilot-tracking/research/launchpad-mk2-implementation-progress.md](.copilot-tracking/research/launchpad-mk2-implementation-progress.md)
+- **Quick Start:** [docs/LAUNCHPAD-MK2-QUICKSTART.md](../../docs/LAUNCHPAD-MK2-QUICKSTART.md)
+- **Full Documentation:** [docs/MIDI-CONTROLLERS.md § Launchpad Mk2 Integration](../../docs/MIDI-CONTROLLERS.md#launchpad-mk2-integration)
+- **Studio Manual:** [docs/STUDIO.md](../../docs/STUDIO.md)
+- **Ardour Template Setup:** [docs/ARDOUR-SETUP.md](../../docs/ARDOUR-SETUP.md)
+- **Progress Tracking:** [.copilot-tracking/plans/2026-01-19-launchpad-mk2-implementation-progress.md](../plans/2026-01-19-launchpad-mk2-implementation-progress.md)

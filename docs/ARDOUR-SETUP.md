@@ -1237,7 +1237,7 @@ If adopting foldback busses:
 
 **Reference:**
 - Ardour Manual: [Working with Foldback](https://manual.ardour.org/working-with-tracks/foldback/)
-- See also: [`docs/MIX-MINUS-OPERATIONS.md`](docs/MIX-MINUS-OPERATIONS.md) for current workflow
+- See also: [`audio/docs/MIX-MINUS-OPERATIONS.md`](../audio/docs/MIX-MINUS-OPERATIONS.md) for current workflow
 
 ### Step 24: Session Templates
 

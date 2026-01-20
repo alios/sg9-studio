@@ -117,100 +117,99 @@
   <!-- ═══════════════════════════════════════════════════════════════════ -->
   <!-- ROW 4: CUE A SLOTS 1-8 (Pads 51-58) → Jingles/Intros                -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <!-- NOTE: URI syntax for cue triggers needs verification via MIDI Learn -->
-  <!-- Expected format: /cues/<letter>/<slot> or /trigger/<letter>/<slot>  -->
-  <!-- Test with: Right-click cue slot → MIDI Learn → Press pad            -->
+  <!-- Ardour action names (verified from source): trigger-slot-{col}-{row} -->
+  <!-- col: 0-7 (slot 1-8 / grid columns), row: 0=A, 1=B, ...             -->
 
-  <Binding channel="1" note="51" action="Cue/trigger-cue-row-0-0"/>
-  <Binding channel="1" note="52" action="Cue/trigger-cue-row-0-1"/>
-  <Binding channel="1" note="53" action="Cue/trigger-cue-row-0-2"/>
-  <Binding channel="1" note="54" action="Cue/trigger-cue-row-0-3"/>
-  <Binding channel="1" note="55" action="Cue/trigger-cue-row-0-4"/>
-  <Binding channel="1" note="56" action="Cue/trigger-cue-row-0-5"/>
-  <Binding channel="1" note="57" action="Cue/trigger-cue-row-0-6"/>
-  <Binding channel="1" note="58" action="Cue/trigger-cue-row-0-7"/>
+  <Binding channel="1" note="51" action="trigger-slot-0-0"/>
+  <Binding channel="1" note="52" action="trigger-slot-1-0"/>
+  <Binding channel="1" note="53" action="trigger-slot-2-0"/>
+  <Binding channel="1" note="54" action="trigger-slot-3-0"/>
+  <Binding channel="1" note="55" action="trigger-slot-4-0"/>
+  <Binding channel="1" note="56" action="trigger-slot-5-0"/>
+  <Binding channel="1" note="57" action="trigger-slot-6-0"/>
+  <Binding channel="1" note="58" action="trigger-slot-7-0"/>
 
   <!-- ═══════════════════════════════════════════════════════════════════ -->
   <!-- ROW 5: CUE B SLOTS 1-8 (Pads 41-48) → Music Beds                    -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-  <Binding channel="1" note="41" action="Cue/trigger-cue-row-1-0"/>
-  <Binding channel="1" note="42" action="Cue/trigger-cue-row-1-1"/>
-  <Binding channel="1" note="43" action="Cue/trigger-cue-row-1-2"/>
-  <Binding channel="1" note="44" action="Cue/trigger-cue-row-1-3"/>
-  <Binding channel="1" note="45" action="Cue/trigger-cue-row-1-4"/>
-  <Binding channel="1" note="46" action="Cue/trigger-cue-row-1-5"/>
-  <Binding channel="1" note="47" action="Cue/trigger-cue-row-1-6"/>
-  <Binding channel="1" note="48" action="Cue/trigger-cue-row-1-7"/>
+  <Binding channel="1" note="41" action="trigger-slot-0-1"/>
+  <Binding channel="1" note="42" action="trigger-slot-1-1"/>
+  <Binding channel="1" note="43" action="trigger-slot-2-1"/>
+  <Binding channel="1" note="44" action="trigger-slot-3-1"/>
+  <Binding channel="1" note="45" action="trigger-slot-4-1"/>
+  <Binding channel="1" note="46" action="trigger-slot-5-1"/>
+  <Binding channel="1" note="47" action="trigger-slot-6-1"/>
+  <Binding channel="1" note="48" action="trigger-slot-7-1"/>
 
   <!-- ═══════════════════════════════════════════════════════════════════ -->
   <!-- ROW 6: CUE C SLOTS 1-8 (Pads 31-38) → SFX                           -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-  <Binding channel="1" note="31" action="Cue/trigger-cue-row-2-0"/>
-  <Binding channel="1" note="32" action="Cue/trigger-cue-row-2-1"/>
-  <Binding channel="1" note="33" action="Cue/trigger-cue-row-2-2"/>
-  <Binding channel="1" note="34" action="Cue/trigger-cue-row-2-3"/>
-  <Binding channel="1" note="35" action="Cue/trigger-cue-row-2-4"/>
-  <Binding channel="1" note="36" action="Cue/trigger-cue-row-2-5"/>
-  <Binding channel="1" note="37" action="Cue/trigger-cue-row-2-6"/>
-  <Binding channel="1" note="38" action="Cue/trigger-cue-row-2-7"/>
+  <Binding channel="1" note="31" action="trigger-slot-0-2"/>
+  <Binding channel="1" note="32" action="trigger-slot-1-2"/>
+  <Binding channel="1" note="33" action="trigger-slot-2-2"/>
+  <Binding channel="1" note="34" action="trigger-slot-3-2"/>
+  <Binding channel="1" note="35" action="trigger-slot-4-2"/>
+  <Binding channel="1" note="36" action="trigger-slot-5-2"/>
+  <Binding channel="1" note="37" action="trigger-slot-6-2"/>
+  <Binding channel="1" note="38" action="trigger-slot-7-2"/>
 
   <!-- ═══════════════════════════════════════════════════════════════════ -->
   <!-- ROW 7: CUE D SLOTS 1-8 (Pads 21-28) → Custom/Emergency              -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-  <Binding channel="1" note="21" action="Cue/trigger-cue-row-3-0"/>
-  <Binding channel="1" note="22" action="Cue/trigger-cue-row-3-1"/>
-  <Binding channel="1" note="23" action="Cue/trigger-cue-row-3-2"/>
-  <Binding channel="1" note="24" action="Cue/trigger-cue-row-3-3"/>
-  <Binding channel="1" note="25" action="Cue/trigger-cue-row-3-4"/>
-  <Binding channel="1" note="26" action="Cue/trigger-cue-row-3-5"/>
-  <Binding channel="1" note="27" action="Cue/trigger-cue-row-3-6"/>
-  <Binding channel="1" note="28" action="Cue/trigger-cue-row-3-7"/>
+  <Binding channel="1" note="21" action="trigger-slot-0-3"/>
+  <Binding channel="1" note="22" action="trigger-slot-1-3"/>
+  <Binding channel="1" note="23" action="trigger-slot-2-3"/>
+  <Binding channel="1" note="24" action="trigger-slot-3-3"/>
+  <Binding channel="1" note="25" action="trigger-slot-4-3"/>
+  <Binding channel="1" note="26" action="trigger-slot-5-3"/>
+  <Binding channel="1" note="27" action="trigger-slot-6-3"/>
+  <Binding channel="1" note="28" action="trigger-slot-7-3"/>
 
   <!-- ═══════════════════════════════════════════════════════════════════ -->
   <!-- ROW 8: CUE E SLOTS 1-8 (Pads 11-18) → Reserved                      -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-  <Binding channel="1" note="11" action="Cue/trigger-cue-row-4-0"/>
-  <Binding channel="1" note="12" action="Cue/trigger-cue-row-4-1"/>
-  <Binding channel="1" note="13" action="Cue/trigger-cue-row-4-2"/>
-  <Binding channel="1" note="14" action="Cue/trigger-cue-row-4-3"/>
-  <Binding channel="1" note="15" action="Cue/trigger-cue-row-4-4"/>
-  <Binding channel="1" note="16" action="Cue/trigger-cue-row-4-5"/>
-  <Binding channel="1" note="17" action="Cue/trigger-cue-row-4-6"/>
-  <Binding channel="1" note="18" action="Cue/trigger-cue-row-4-7"/>
+  <Binding channel="1" note="11" action="trigger-slot-0-4"/>
+  <Binding channel="1" note="12" action="trigger-slot-1-4"/>
+  <Binding channel="1" note="13" action="trigger-slot-2-4"/>
+  <Binding channel="1" note="14" action="trigger-slot-3-4"/>
+  <Binding channel="1" note="15" action="trigger-slot-4-4"/>
+  <Binding channel="1" note="16" action="trigger-slot-5-4"/>
+  <Binding channel="1" note="17" action="trigger-slot-6-4"/>
+  <Binding channel="1" note="18" action="trigger-slot-7-4"/>
 
   <!-- ═══════════════════════════════════════════════════════════════════ -->
   <!-- SCENE COLUMN: TRIGGER ENTIRE CUES (Pads 89-19) → Cues A-H           -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
 
   <!-- Scene 1 (Pad 89): Trigger all Cue A slots -->
-  <Binding channel="1" note="89" action="Cue/trigger-scene-0"/>
+  <Binding channel="1" note="89" action="trigger-cue-0"/>
 
   <!-- Scene 2 (Pad 79): Trigger all Cue B slots -->
-  <Binding channel="1" note="79" action="Cue/trigger-scene-1"/>
+  <Binding channel="1" note="79" action="trigger-cue-1"/>
 
   <!-- Scene 3 (Pad 69): Trigger all Cue C slots -->
-  <Binding channel="1" note="69" action="Cue/trigger-scene-2"/>
+  <Binding channel="1" note="69" action="trigger-cue-2"/>
 
   <!-- Scene 4 (Pad 59): Trigger all Cue D slots -->
-  <Binding channel="1" note="59" action="Cue/trigger-scene-3"/>
+  <Binding channel="1" note="59" action="trigger-cue-3"/>
 
   <!-- Scene 5 (Pad 49): Trigger all Cue E slots -->
-  <Binding channel="1" note="49" action="Cue/trigger-scene-4"/>
+  <Binding channel="1" note="49" action="trigger-cue-4"/>
 
   <!-- Scene 6 (Pad 39): Trigger all Cue F slots -->
-  <Binding channel="1" note="39" action="Cue/trigger-scene-5"/>
+  <Binding channel="1" note="39" action="trigger-cue-5"/>
 
   <!-- Scene 7 (Pad 29): Trigger all Cue G slots -->
-  <Binding channel="1" note="29" action="Cue/trigger-scene-6"/>
+  <Binding channel="1" note="29" action="trigger-cue-6"/>
 
   <!-- Scene 8 (Pad 19): Trigger all Cue H slots (or Stop All Cues) -->
-  <Binding channel="1" note="19" action="Cue/trigger-scene-7"/>
+  <Binding channel="1" note="19" action="trigger-cue-7"/>
 
   <!-- Alternative for Scene 8: Stop All Cues -->
-  <!-- <Binding channel="1" note="19" action="Cue/stop-all-cues"/> -->
+  <!-- <Binding channel="1" note="19" action="stop-all-cues-soon"/> -->
 
 </ArdourMIDIBindings>

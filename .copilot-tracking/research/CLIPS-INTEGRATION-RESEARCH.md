@@ -469,10 +469,10 @@ Cue H   │  Cymbal-Crash.wav
 
 ### SG9 Studio Documentation
 
-- [STUDIO.md](STUDIO.md) - Main broadcast workflow reference
-- [ARDOUR-SETUP.md](ARDOUR-SETUP.md) - Session template guide
-- [MIDI-CONTROLLERS.md](MIDI-CONTROLLERS.md) - Comprehensive controller integration
-- [LAUNCHPAD-MK2-QUICKSTART.md](LAUNCHPAD-MK2-QUICKSTART.md) - 5-minute setup guide
+- [docs/STUDIO.md](../../docs/STUDIO.md) - Main broadcast workflow reference
+- [docs/ARDOUR-SETUP.md](../../docs/ARDOUR-SETUP.md) - Session template guide
+- [docs/MIDI-CONTROLLERS.md](../../docs/MIDI-CONTROLLERS.md) - Comprehensive controller integration
+- [docs/LAUNCHPAD-MK2-QUICKSTART.md](../../docs/LAUNCHPAD-MK2-QUICKSTART.md) - 5-minute setup guide
 
 ---
 

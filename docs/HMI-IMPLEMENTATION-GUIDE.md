@@ -345,7 +345,7 @@ Fader 8: Master Control VCA
 - `Window → Audio Connections → Sends tab`
 - Verify no send from Remote Guest to Mix-Minus
 
-**See Also:** [docs/MIX-MINUS-OPERATIONS.md](docs/MIX-MINUS-OPERATIONS.md) for complete workflow
+**See Also:** [audio/docs/MIX-MINUS-OPERATIONS.md](../audio/docs/MIX-MINUS-OPERATIONS.md) for complete workflow
 
 ---
 
@@ -546,10 +546,10 @@ Fader 8: Master Control VCA
 
 ## References
 
-- [HMI Improvements Recommendations](docs/HMI-IMPROVEMENTS-RECOMMENDATIONS.md)
-- [Mix-Minus Operations Guide](docs/MIX-MINUS-OPERATIONS.md)
-- [Color Schema Standard](docs/COLOR-SCHEMA-STANDARD.md)
-- [Quick Reference Card](docs/QUICK-REFERENCE-CARD.md)
+- [HMI Improvements Recommendations](HMI-IMPROVEMENTS-RECOMMENDATIONS.md)
+- [Mix-Minus Operations Guide](../audio/docs/MIX-MINUS-OPERATIONS.md)
+- [Color Schema Standard](COLOR-SCHEMA-STANDARD.md)
+- [Quick Reference Card](../audio/docs/QUICK-REFERENCE-CARD.md)
 - [Ardour Lua Scripting Manual](https://manual.ardour.org/lua-scripting/)
 
 ---

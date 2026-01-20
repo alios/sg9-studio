@@ -79,7 +79,7 @@ cp ~/.config/ardour8/midi_maps/sg9-launchpad-mk2.map ~/.config/ardour8/midi_maps
 
 ## LED Color Schema
 
-SG9 Studio uses consistent colors across all interfaces (see [Color Schema Standard](docs/COLOR-SCHEMA-STANDARD.md)):
+SG9 Studio uses consistent colors across all interfaces (see [Color Schema Standard](COLOR-SCHEMA-STANDARD.md)):
 
 **Track Status (Row 1 - Armed):**
 - **Red:** Voice tracks armed (Host Mic)

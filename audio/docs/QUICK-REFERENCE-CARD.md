@@ -143,9 +143,9 @@
 
 ## 📖 Documentation
 
-- **[STUDIO.md](../STUDIO.md)** — Complete setup & operational manual
-- **[ARDOUR-SETUP.md](../ARDOUR-SETUP.md)** — Template configuration
-- **[COLOR-SCHEMA-STANDARD.md](COLOR-SCHEMA-STANDARD.md)** — Color meanings
+- **[STUDIO.md](../../docs/STUDIO.md)** — Complete setup & operational manual
+- **[ARDOUR-SETUP.md](../../docs/ARDOUR-SETUP.md)** — Template configuration
+- **[COLOR-SCHEMA-STANDARD.md](../../docs/COLOR-SCHEMA-STANDARD.md)** — Color meanings
 - **[EMERGENCY-PROCEDURES.md](EMERGENCY-PROCEDURES.md)** — Detailed recovery protocols
 
 ---

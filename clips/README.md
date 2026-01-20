@@ -80,7 +80,7 @@ Currently tracking audio files directly in git (manageable size).
 
 ## Related Documentation
 
-- [CLIPS-INTEGRATION-RESEARCH.md](../CLIPS-INTEGRATION-RESEARCH.md) - Research on Ardour clips feature
-- [.copilot-tracking/plans/clips-cue-integration.instructions.md](../.copilot-tracking/plans/clips-cue-integration.instructions.md) - Implementation plan
-- [STUDIO.md](../STUDIO.md) - Main studio workflow reference
-- [ARDOUR-SETUP.md](../ARDOUR-SETUP.md) - Ardour template setup guide
+- [CLIPS-INTEGRATION-RESEARCH.md](../docs/CLIPS-INTEGRATION-RESEARCH.md) - Research on Ardour clips feature
+- [.copilot-tracking/plans/2026-01-19-clips-cue-integration.instructions.md](../.copilot-tracking/plans/2026-01-19-clips-cue-integration.instructions.md) - Implementation plan
+- [STUDIO.md](../docs/STUDIO.md) - Main studio workflow reference
+- [ARDOUR-SETUP.md](../docs/ARDOUR-SETUP.md) - Ardour template setup guide

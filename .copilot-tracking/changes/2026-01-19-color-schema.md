@@ -123,7 +123,7 @@ Implemented consistent color coding across all SG9 Studio interfaces based on pr
 
 ### 6. ✅ Created Quick Reference Card
 
-**File:** `docs/QUICK-REFERENCE-CARD.md`
+**File:** `audio/docs/QUICK-REFERENCE-CARD.md`
 
 **Content:**
 - nanoKONTROL fader map with colors
@@ -242,7 +242,7 @@ New operators learn faster:
 | `ARDOUR-SETUP.md` | ✅ Updated | Track color assignments + schema reference |
 | `LAUNCHPAD-MK2-QUICKSTART.md` | ✅ Updated | LED color schema section |
 | `README.md` | ✅ Updated | Quick links to color schema |
-| `docs/QUICK-REFERENCE-CARD.md` | ✅ Created | Printable desk reference |
+| `audio/docs/QUICK-REFERENCE-CARD.md` | ✅ Created | Printable desk reference |
 
 ---
 

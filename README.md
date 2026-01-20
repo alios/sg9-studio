@@ -13,8 +13,36 @@ This repository contains a single, authoritative manual for building and operati
 - **LSP Plugins** - Modern broadcast-grade audio processing
 - **Calf Studio Gear** - De-essing and sidechain compression
 - **ZAM Plugins** - Alternative dynamics processors
-- **x42-plugins** - MIDI routing and transformation
+- **x42-plugins** - Meters, analyzers (True Peak monitoring)
 - **NixOS** - Declarative, reproducible system configuration
+
+## AI-Powered Workflow Assistance
+
+**Specialized Agents:**
+
+SG9 Studio includes AI agents for domain-specific assistance:
+
+- **[Audio Engineer](.github/agents/brief/audio-engineer.md)** - Session templates, loudness compliance (EBU R128), plugin chains, mix-minus routing
+- **[Systems Engineer](.github/agents/brief/systems-engineer.md)** - Lua scripting, MIDI controller integration, NixOS package management
+- **[AI Engineer](.github/agents/brief/ai-engineer.md)** - MCP/agent infrastructure, documentation sync, Serena workflows, tracking templates
+
+Agents auto-activate based on file context. See [AGENTS.md](AGENTS.md) for details.
+
+**MCP Servers:**
+
+- **github** - Search Ardour Lua API examples, repository operations
+- **filesystem** - Workspace file operations, clip/session management
+- **sequential-thinking** - Complex multi-step reasoning workflows
+- **mcp-nixos** - Package search (130k+ packages), system configuration
+- **oraios/serena** - Semantic code navigation and safe refactors
+- **microsoft/markitdown** - Convert docs to Markdown for LLM consumption
+
+**Environment:**
+- `GITHUB_TOKEN` is required for the GitHub MCP server (`.vscode/mcp.json`).
+
+**Tracking Templates:**
+
+Professional documentation templates in `.copilot-tracking/templates/` for research, implementation, and testing workflows.
 
 ## Documentation
 
@@ -44,7 +72,7 @@ Systematic color coding based on professional broadcast HMI research:
 
 **Implements best practices from:** Lawo diamond, DHD Audio, Wheatstone LXE
 
-### 📘 [STUDIO.md](STUDIO.md)
+### 📘 [STUDIO.md](docs/STUDIO.md)
 
 **Complete setup and operational manual**
 
@@ -59,7 +87,7 @@ Includes:
 - Loudness targets, LRA guidance, and metering
 - Troubleshooting and appendices
 
-### 📡 [MIX-MINUS-OPERATIONS.md](docs/MIX-MINUS-OPERATIONS.md)
+### 📡 [MIX-MINUS-OPERATIONS.md](audio/docs/MIX-MINUS-OPERATIONS.md)
 
 **Critical workflow for remote guest interviews**
 
@@ -71,7 +99,7 @@ Complete guide to mix-minus (N-1) routing:
 - Troubleshooting (echo, latency, VoIP issues)
 - Professional comparison (Axia, Wheatstone, DHD)
 
-### 🎛️ [LAUNCHPAD-MK2-QUICKSTART.md](LAUNCHPAD-MK2-QUICKSTART.md)
+### 🎛️ [LAUNCHPAD-MK2-QUICKSTART.md](docs/LAUNCHPAD-MK2-QUICKSTART.md)
 
 **5-minute Novation Launchpad Mk2 setup guide**
 
@@ -83,7 +111,7 @@ RGB LED feedback integration for visual track monitoring and clip launching:
 - Automatic error recovery and hotplug detection
 - Session-persistent brightness control
 
-**Full documentation:** [MIDI-CONTROLLERS.md § Launchpad Mk2 Integration](MIDI-CONTROLLERS.md#launchpad-mk2-integration)
+**Full documentation:** [MIDI-CONTROLLERS.md § Launchpad Mk2 Integration](docs/MIDI-CONTROLLERS.md#launchpad-mk2-integration)
 
 ## Quick Start
 
@@ -102,7 +130,7 @@ nix-env -iA nixos.ardour nixos.lsp-plugins nixos.calf \
              nixos.zam-plugins nixos.x42-plugins
 ```
 
-Then read [STUDIO.md](STUDIO.md) for complete setup instructions.
+Then read [STUDIO.md](docs/STUDIO.md) for complete setup instructions.
 
 ## Key Features
 
@@ -135,8 +163,8 @@ All referenced software maintains its own licenses:
 
 ## Getting Help
 
-1. Read [STUDIO.md](STUDIO.md) for step-by-step setup
-2. See the appendices in [STUDIO.md](STUDIO.md) for plugin and monitoring references
+1. Read [STUDIO.md](docs/STUDIO.md) for step-by-step setup
+2. See the appendices in [STUDIO.md](docs/STUDIO.md) for plugin and monitoring references
 3. Consult official plugin documentation as needed
 
 ______________________________________________________________________

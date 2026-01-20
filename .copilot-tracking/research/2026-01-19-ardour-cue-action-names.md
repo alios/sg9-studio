@@ -174,8 +174,8 @@ Glib::RefPtr<ActionGroup> trigger_actions = ActionManager::create_action_group (
 
 1. Load MIDI binding map in Ardour
 2. Use MIDI Learn on one cue button to confirm exact syntax
-3. If action names differ, update [midi_maps/sg9-launchpad-mk2.map](midi_maps/sg9-launchpad-mk2.map)
-4. Proceed with [TESTING-CUE-INTEGRATION.md](TESTING-CUE-INTEGRATION.md) Test 1
+3. If action names differ, update [midi_maps/sg9-launchpad-mk2.map](../../midi_maps/sg9-launchpad-mk2.map)
+4. Proceed with [docs/TESTING-CUE-INTEGRATION.md](../../docs/TESTING-CUE-INTEGRATION.md) Test 1
 
 ## References
 

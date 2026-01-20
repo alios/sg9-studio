@@ -2,7 +2,7 @@
 
 **Date:** 2026-01-19  
 **Status:** Implementation Complete (Testing Pending)  
-**Related:** [CUE-INTEGRATION-STATUS.md](CUE-INTEGRATION-STATUS.md), [TESTING-CUE-INTEGRATION.md](TESTING-CUE-INTEGRATION.md)
+**Related:** [docs/CUE-INTEGRATION-STATUS.md](../../docs/CUE-INTEGRATION-STATUS.md), [docs/TESTING-CUE-INTEGRATION.md](../../docs/TESTING-CUE-INTEGRATION.md)
 
 ---
 
@@ -15,11 +15,11 @@ This document summarizes the complete implementation of Ardour clips/cue feature
 ### ✅ Phase 1: Clip Library Structure (COMPLETED)
 
 **Created Files:**
-- [clips/](clips/) - Root clip library directory
-- [clips/README.md](clips/README.md) - Comprehensive workflow documentation
-- [clips/Jingles/](clips/Jingles/) - Intro/outro clips (10-30s)
-- [clips/Music-Beds/](clips/Music-Beds/) - Background music (30-180s)
-- [clips/SFX/](clips/SFX/) - Sound effects (<10s)
+- [clips/](../../clips/) - Root clip library directory
+- [clips/README.md](../../clips/README.md) - Comprehensive workflow documentation
+- [clips/Jingles/](../../clips/Jingles/) - Intro/outro clips (10-30s)
+- [clips/Music-Beds/](../../clips/Music-Beds/) - Background music (30-180s)
+- [clips/SFX/](../../clips/SFX/) - Sound effects (<10s)
 
 **Specifications:**
 - Sample rate: 48 kHz
@@ -74,7 +74,7 @@ This document summarizes the complete implementation of Ardour clips/cue feature
 
 ### ⏳ Phase 4: Testing (NOT STARTED)
 
-**Testing Protocol:** [TESTING-CUE-INTEGRATION.md](TESTING-CUE-INTEGRATION.md)
+**Testing Protocol:** [docs/TESTING-CUE-INTEGRATION.md](../../docs/TESTING-CUE-INTEGRATION.md)
 
 **Tests Required:**
 1. **MIDI Binding Verification:** Use MIDI Learn to confirm cue trigger action names
@@ -94,16 +94,16 @@ This document summarizes the complete implementation of Ardour clips/cue feature
 ### ⏳ Phase 5: Documentation (IN PROGRESS)
 
 **Completed Updates:**
-- ✅ [README.md](README.md) - Updated feature list with cue integration
-- ✅ [STUDIO.md](STUDIO.md) - Added "Appendix: Ardour Clips & Cue Workflow" (v2.1)
-- ✅ [LAUNCHPAD-MK2-QUICKSTART.md](LAUNCHPAD-MK2-QUICKSTART.md) - Added cue grid layout and LED color schema
-- ✅ [.github/copilot-instructions.md](.github/copilot-instructions.md) - Fixed repository description
+- ✅ [README.md](../../README.md) - Updated feature list with cue integration
+- ✅ [docs/STUDIO.md](../../docs/STUDIO.md) - Added "Appendix: Ardour Clips & Cue Workflow" (v2.1)
+- ✅ [docs/LAUNCHPAD-MK2-QUICKSTART.md](../../docs/LAUNCHPAD-MK2-QUICKSTART.md) - Added cue grid layout and LED color schema
+- ✅ [.github/copilot-instructions.md](../../.github/copilot-instructions.md) - Fixed repository description
 
 **Created Documentation:**
-- ✅ [CLIPS-INTEGRATION-RESEARCH.md](CLIPS-INTEGRATION-RESEARCH.md) - Comprehensive research report
-- ✅ [CUE-INTEGRATION-STATUS.md](CUE-INTEGRATION-STATUS.md) - Implementation status tracker
-- ✅ [TESTING-CUE-INTEGRATION.md](TESTING-CUE-INTEGRATION.md) - Complete testing protocol
-- ✅ [.copilot-tracking/plans/clips-cue-integration.instructions.md](.copilot-tracking/plans/clips-cue-integration.instructions.md) - Implementation plan
+- ✅ [docs/CLIPS-INTEGRATION-RESEARCH.md](../../docs/CLIPS-INTEGRATION-RESEARCH.md) - Comprehensive research report
+- ✅ [docs/CUE-INTEGRATION-STATUS.md](../../docs/CUE-INTEGRATION-STATUS.md) - Implementation status tracker
+- ✅ [docs/TESTING-CUE-INTEGRATION.md](../../docs/TESTING-CUE-INTEGRATION.md) - Complete testing protocol
+- ✅ [.copilot-tracking/plans/2026-01-19-clips-cue-integration.instructions.md](../plans/2026-01-19-clips-cue-integration.instructions.md) - Implementation plan
 
 **Pending Updates:**
 - None - all documentation complete for implementation phase
@@ -223,13 +223,13 @@ Scene Column: Pads 89, 79, 69, 59, 49 → Trigger entire cue rows
 
 2. **Configure Ardour clips library:**
    - `Edit → Preferences → Triggering`
-   - Custom Clips Folder: `/Users/alios/src/sg9-studio/clips/`
+   - Custom Clips Folder: set to the absolute path of your checkout’s `clips/` folder
 
 3. **Test MIDI bindings with MIDI Learn:**
    - Load clip into Cue A, Slot 1
    - Right-click cue button → MIDI Learn
    - Press pad 51 → Note action name in log
-   - Update `.map` file if syntax differs
+   - If you’re on a different Ardour version and the action name differs, update `.map` accordingly
 
 4. **Test Lua API availability:**
    - `Window → Scripting → Action Scripts`
@@ -277,9 +277,9 @@ The implementation phase (Phases 1-3) is **complete**. All code, bindings, and d
 
 ## References
 
-- [Implementation Plan](.copilot-tracking/plans/clips-cue-integration.instructions.md)
-- [Research Report](CLIPS-INTEGRATION-RESEARCH.md)
-- [Status Tracker](CUE-INTEGRATION-STATUS.md)
-- [Testing Protocol](TESTING-CUE-INTEGRATION.md)
+- [Implementation Plan](../plans/2026-01-19-clips-cue-integration.instructions.md)
+- [Research Report](../../docs/CLIPS-INTEGRATION-RESEARCH.md)
+- [Status Tracker](../../docs/CUE-INTEGRATION-STATUS.md)
+- [Testing Protocol](../../docs/TESTING-CUE-INTEGRATION.md)
 - [Ardour Manual: Clips & Cues](https://manual.ardour.org/clips/clips-overview/)
 - [Ardour Discourse Community](https://discourse.ardour.org/)

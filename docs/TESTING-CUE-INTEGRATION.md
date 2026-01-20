@@ -11,7 +11,8 @@
 ### 1. Install MIDI Bindings
 
 ```fish
-cd /Users/alios/src/sg9-studio
+# Run from your sg9-studio checkout
+cd (git rev-parse --show-toplevel)
 
 # Copy to Ardour config directory
 mkdir -p ~/.config/ardour8/midi_maps/
@@ -25,7 +26,7 @@ ln -sf (pwd)/midi_maps/sg9-launchpad-mk2.map ~/.config/ardour8/midi_maps/
 
 1. Open Ardour
 2. `Edit → Preferences → Triggering`
-3. **Custom Clips Folder:** `/Users/alios/src/sg9-studio/clips/`
+3. **Custom Clips Folder:** set this to the absolute path of your checkout’s `clips/` folder
 4. Click **OK**, restart Ardour
 
 ### 3. Enable Generic MIDI Control Surface
@@ -43,7 +44,7 @@ ln -sf (pwd)/midi_maps/sg9-launchpad-mk2.map ~/.config/ardour8/midi_maps/
 1. Open Ardour
 2. `Window → Scripting → Script Manager`
 3. Click **Add/Set** → **Load**
-4. Browse to `/Users/alios/src/sg9-studio/scripts/launchpad_mk2_feedback.lua`
+4. Browse to `scripts/launchpad_mk2_feedback.lua` in this repo
 5. Click **Activate**
 6. Verify no errors in `Window → Log`
 
@@ -52,7 +53,7 @@ ln -sf (pwd)/midi_maps/sg9-launchpad-mk2.map ~/.config/ardour8/midi_maps/
 You'll need test audio files to populate the cue grid. Create simple test clips:
 
 ```fish
-cd /Users/alios/src/sg9-studio/clips/Jingles/
+cd (git rev-parse --show-toplevel)/clips/Jingles/
 
 # Generate 5-second test tones (requires SoX)
 sox -n -r 48000 -c 2 test-cue-a.wav synth 5 sine 440  # A4 (440 Hz)
@@ -72,7 +73,8 @@ Or use existing audio files (ensure 48kHz sample rate).
 
 **Goal:** Verify that cue trigger action names are correct.
 
-**⚠️ CRITICAL:** The `.map` file uses **speculative action names** that need validation.
+The cue action names in `midi_maps/sg9-launchpad-mk2.map` are based on verified Ardour action IDs.
+It’s still worth confirming via MIDI Learn if you upgrade Ardour or notice triggers not firing.
 
 **Procedure:**
 
@@ -92,7 +94,7 @@ Or use existing audio files (ensure 48kHz sample rate).
 **If action name differs from `.map` file:**
 
 1. Open `midi_maps/sg9-launchpad-mk2.map`
-2. Find line: `<Binding channel="1" note="51" action="Cue/trigger-cue-row-0-0"/>`
+2. Find line: `<Binding channel="1" note="51" action="trigger-slot-0-0"/>`
 3. Update `action=""` attribute with correct syntax
 4. Repeat for all 40 cue trigger bindings (rows 4-8)
 5. Reload MIDI bindings in Ardour (disable/re-enable Generic MIDI)

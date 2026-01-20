@@ -97,7 +97,7 @@ end
 
 **Implementation:**
 
-Update [ARDOUR-SETUP.md](ARDOUR-SETUP.md) Step 4 (Create Tracks) with explicit color assignments from [COLOR-SCHEMA-STANDARD.md](docs/COLOR-SCHEMA-STANDARD.md):
+Update [ARDOUR-SETUP.md](ARDOUR-SETUP.md) Step 4 (Create Tracks) with explicit color assignments from [COLOR-SCHEMA-STANDARD.md](COLOR-SCHEMA-STANDARD.md):
 
 ```diff
 4. **Guest Mic — Track 3**

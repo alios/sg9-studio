@@ -37,17 +37,23 @@ ln -s (pwd)/midi_maps/sg9-launchpad-mk2.map ~/.config/ardour8/midi_maps/
 
 ## Cue Trigger Action Names
 
-**Note:** The exact action names for cue triggers in Ardour Generic MIDI are **not fully documented**. The bindings in `sg9-launchpad-mk2.map` use:
+Cue trigger action names are now **verified from Ardour source** and implemented in `sg9-launchpad-mk2.map`.
 
 ```xml
 <!-- Individual slot triggers -->
-<Binding channel="1" note="51" action="Cue/trigger-cue-row-0-0"/>
+<Binding channel="1" note="51" action="trigger-slot-0-0"/>
 
 <!-- Entire cue (scene) triggers -->
-<Binding channel="1" note="89" action="Cue/trigger-scene-0"/>
+<Binding channel="1" note="89" action="trigger-cue-0"/>
 ```
 
-**To verify correct syntax:**
+**Patterns:**
+- Individual slot: `trigger-slot-{col}-{row}`
+- Entire cue row (scene): `trigger-cue-{row}`
+
+**Reference:** [.copilot-tracking/research/2026-01-19-ardour-cue-action-names.md](../.copilot-tracking/research/2026-01-19-ardour-cue-action-names.md)
+
+**Still recommended (when upgrading Ardour):**
 
 1. In Ardour, right-click a cue slot button in Cue window
 2. Select **MIDI Learn**
@@ -109,7 +115,7 @@ echo "Valid: $status"
 
 ## Related Documentation
 
-- [MIDI-CONTROLLERS.md](../MIDI-CONTROLLERS.md) - Full Launchpad Mk2 integration guide
-- [LAUNCHPAD-MK2-QUICKSTART.md](../LAUNCHPAD-MK2-QUICKSTART.md) - 5-minute setup guide
+- [MIDI-CONTROLLERS.md](../docs/MIDI-CONTROLLERS.md) - Full Launchpad Mk2 integration guide
+- [LAUNCHPAD-MK2-QUICKSTART.md](../docs/LAUNCHPAD-MK2-QUICKSTART.md) - 5-minute setup guide
 - [Ardour Manual: Generic MIDI](https://manual.ardour.org/using-control-surfaces/generic-midi/)
 - [Ardour Manual: MIDI Binding Maps](https://manual.ardour.org/using-control-surfaces/generic-midi/midi-binding-maps/)

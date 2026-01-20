@@ -2,7 +2,7 @@
 
 **Date:** 2026-01-19  
 **Status:** Planning  
-**Related Research:** [CLIPS-INTEGRATION-RESEARCH.md](../../CLIPS-INTEGRATION-RESEARCH.md)
+**Related Research:** [.copilot-tracking/research/CLIPS-INTEGRATION-RESEARCH.md](../research/CLIPS-INTEGRATION-RESEARCH.md)
 
 ---
 
@@ -145,20 +145,20 @@ Integrate Ardour's clip/cue triggering system into SG9 Studio's broadcast workfl
 ### 5. Document Workflow and Update Quick Reference
 
 **Actions:**
-- Add new appendix to [STUDIO.md](../../STUDIO.md): "Appendix: Ardour Clips & Cue Workflow"
+- Add new appendix to [docs/STUDIO.md](../../docs/STUDIO.md): "Appendix: Ardour Clips & Cue Workflow"
   - Cue grid layout and track assignments
   - Launchpad MK2 mapping (rows 4-8, scene column)
   - Pre-show checklist: clip loading, follow action verification, LED feedback test
   - Troubleshooting: common issues (quantization latency, LED sync, MIDI routing)
-- Update [LAUNCHPAD-MK2-QUICKSTART.md](../../LAUNCHPAD-MK2-QUICKSTART.md):
+- Update [docs/LAUNCHPAD-MK2-QUICKSTART.md](../../docs/LAUNCHPAD-MK2-QUICKSTART.md):
   - Section 4: "Cue Triggering (Rows 4-8)"
   - Quick reference table: Pad → Cue/Slot mapping
 - Create cue grid template diagram (ASCII art or exported image from Ardour)
 - Document performance baseline metrics (CPU usage, latency measurements)
 
 **Files Modified:**
-- [STUDIO.md](../../STUDIO.md)
-- [LAUNCHPAD-MK2-QUICKSTART.md](../../LAUNCHPAD-MK2-QUICKSTART.md)
+- [docs/STUDIO.md](../../docs/STUDIO.md)
+- [docs/LAUNCHPAD-MK2-QUICKSTART.md](../../docs/LAUNCHPAD-MK2-QUICKSTART.md)
 
 **Success Criteria:**
 - New operators can set up cue grid in <15 minutes using documentation
@@ -388,11 +388,11 @@ If implementation fails or causes production issues:
 
 ## References
 
-- [CLIPS-INTEGRATION-RESEARCH.md](../../CLIPS-INTEGRATION-RESEARCH.md) - Comprehensive research report + community findings
+- [.copilot-tracking/research/CLIPS-INTEGRATION-RESEARCH.md](../research/CLIPS-INTEGRATION-RESEARCH.md) - Comprehensive research report + community findings
 - [Ardour Manual: Clips Overview](https://manual.ardour.org/clips/clips-overview/)
 - [Ardour Manual: Cue Window](https://manual.ardour.org/cue/cue-window-elements/)
-- [STUDIO.md](../../STUDIO.md) - Current broadcast workflow
-- [MIDI-CONTROLLERS.md](../../MIDI-CONTROLLERS.md) - Launchpad MK2 implementation details
+- [docs/STUDIO.md](../../docs/STUDIO.md) - Current broadcast workflow
+- [docs/MIDI-CONTROLLERS.md](../../docs/MIDI-CONTROLLERS.md) - Launchpad MK2 implementation details
 - [Ardour Discourse: Community Workflows](https://discourse.ardour.org/) - Real-world usage stories
 
 ---
