@@ -295,6 +295,27 @@ environment.systemPackages = with pkgs; [
 ];
 ```
 
+### Plugin Versions Tested
+
+**Last Verified:** 2026-01-20
+
+SG9 Studio is designed to be reproducible via Nix: the exact `nixpkgs` revision is pinned in the repository's `flake.lock`.
+
+| Package | Version | Pinned nixpkgs | Notes |
+| --- | --- | --- | --- |
+| Ardour | 8.12 | e4bae1bd10c9c57b2cf517953ab70060a828ee6f | Clips/cue workflow; scripting enabled |
+| LSP Plugins | 1.2.26 | e4bae1bd10c9c57b2cf517953ab70060a828ee6f | Primary dynamics + de-essing tools |
+| Calf | 0.90.6 | e4bae1bd10c9c57b2cf517953ab70060a828ee6f | Analyzer + legacy quick tools |
+| x42-plugins | 20251025 | e4bae1bd10c9c57b2cf517953ab70060a828ee6f | Metering (True Peak / loudness) |
+| ZAM Plugins | 4.4 | e4bae1bd10c9c57b2cf517953ab70060a828ee6f | Optional / specialized dynamics |
+
+**Query versions from the pinned `nixpkgs` revision:**
+
+```bash
+REV=e4bae1bd10c9c57b2cf517953ab70060a828ee6f
+nix eval --raw github:NixOS/nixpkgs/$REV#legacyPackages.x86_64-linux.lsp-plugins.version
+```
+
 ### Appendix: Ardour Clips & Cue Workflow
 
 **SG9 Studio integrates Ardour's clips/cue feature for non-linear content triggering.**

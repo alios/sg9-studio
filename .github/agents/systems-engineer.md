@@ -37,7 +37,7 @@ Files containing any of these keywords trigger activation:
 
 ### Specific Files (Always Active)
 - [flake.nix](../../flake.nix)
-- [scripts/README.md](../../scripts/README.md) (if exists)
+- [scripts/README.md](../../scripts/README.md)
 - [midi_maps/README.md](../../midi_maps/README.md)
 - [MIDI-CONTROLLERS.md](../../docs/MIDI-CONTROLLERS.md)
 - [LAUNCHPAD-MK2-QUICKSTART.md](../../docs/LAUNCHPAD-MK2-QUICKSTART.md)
@@ -920,7 +920,6 @@ Still not working? Share output from each diagnostic step."
 - [LAUNCHPAD-MK2-QUICKSTART.md](../../docs/LAUNCHPAD-MK2-QUICKSTART.md) - Launchpad RGB LED feedback, cue triggering
 - [flake.nix](../../flake.nix) - NixOS development environment, plugin dependencies
 - [midi_maps/README.md](../../midi_maps/README.md) - Generic MIDI binding documentation
-- [scripts/README.md](../../scripts/README.md) - Lua script inventory (if exists)
 
 **Lua API Reference:**
 - [Ardour Lua API](https://manual.ardour.org/lua-scripting/class_reference/) - Official class reference

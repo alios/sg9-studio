@@ -9,9 +9,11 @@ This directory contains Generic MIDI binding maps for Ardour control surfaces us
 Generic MIDI binding map for Novation Launchpad Mk2 integration with Ardour 8.
 
 **Features:**
+
 - Transport control (play, stop, record, loop)
 - Track operations (arm, mute, solo for 8 tracks)
-- Cue/clip triggering (rows 4-8 → Cues A-E, scene column → trigger entire cues)
+- Cue/clip triggering (rows 4-8 → Cues A-E, scene column → trigger entire
+  cues)
 - Marker navigation
 
 **Installation:**
@@ -48,6 +50,7 @@ Cue trigger action names are now **verified from Ardour source** and implemented
 ```
 
 **Patterns:**
+
 - Individual slot: `trigger-slot-{col}-{row}`
 - Entire cue row (scene): `trigger-cue-{row}`
 

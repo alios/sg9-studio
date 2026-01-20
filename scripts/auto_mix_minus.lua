@@ -86,16 +86,8 @@ function factory(params)
             local track = session:route_by_name(track_name)
 
             if track and not track:isnil() then
-                -- Check if send already exists
-                local send_exists = false
-
-                -- Note: Ardour Lua API does not expose send enumeration directly
-                -- We'll attempt to create the send; if it fails, it may already exist
-
-                local success, err = pcall(function()
-                    -- Convert dB to linear gain
-                    local gain_linear = 10 ^ (send_level_db / 20)
-
+                -- Note: Ardour Lua API does not expose send enumeration directly.
+                local success = pcall(function()
                     -- Create post-fader send
                     -- Note: This API may not be available in all Ardour versions
                     -- If it fails, user must create sends manually
@@ -138,10 +130,5 @@ function factory(params)
         end
         print("\n   Verify: Window → Audio Connections → Sends tab")
         print("═══════════════════════════════════════════════════\n")
-
-        -- Optional: Try to display message in GUI
-        if Editor then
-            -- Editor:flash_message("Check console for mix-minus setup instructions")
-        end
     end
 end

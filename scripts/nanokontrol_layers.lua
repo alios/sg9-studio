@@ -99,11 +99,5 @@ function factory(params)
             print("   MIDI Binding File → Reload")
             print("═══════════════════════════════════════════════════\n")
         end
-
-        -- Optional: Display notification in GUI
-        if Editor then
-            local new_layer = session:metadata():get_value("nanokontrol_layer")
-            -- Editor:flash_message("nanoKONTROL: " .. new_layer .. " layer")
-        end
     end
 end

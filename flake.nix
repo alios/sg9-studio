@@ -43,6 +43,12 @@
           ] ++ (if pkgs.stdenv.isLinux then [
             # Ardour with luasession CLI (Linux only)
             ardour
+
+            # Studio plugin stack (Linux only)
+            lsp-plugins
+            calf
+            zam-plugins
+            x42-plugins
           ] else []);
 
           shellHook = ''

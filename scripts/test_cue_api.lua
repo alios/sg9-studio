@@ -7,7 +7,7 @@ ardour {
 function factory()
     return function()
         print("\n=== ARDOUR CUE API EXPLORATION ===\n")
-        
+
         -- Test 1: Session-level cue accessors
         print("--- Test 1: Session Methods ---")
         local session_methods = {
@@ -18,7 +18,7 @@ function factory()
             "get_triggerbox",
             "cue_count"
         }
-        
+
         for _, method in ipairs(session_methods) do
             local func = Session[method]
             if func then
@@ -27,25 +27,25 @@ function factory()
                 print(string.format("✗ Session:%s NOT FOUND", method))
             end
         end
-        
+
         -- Test 2: RouteList for triggerbox access
         print("\n--- Test 2: Track-Level Triggerbox ---")
         local routes = Session:get_routes()
         if routes:size() > 0 then
             local track = routes:front()
             print(string.format("Testing with track: %s", track:name()))
-            
+
             local track_methods = {
                 "triggerbox",
                 "get_triggerbox",
                 "cue_slot"
             }
-            
+
             for _, method in ipairs(track_methods) do
                 local func = track[method]
                 if func then
                     print(string.format("  ✓ Route:%s exists (type: %s)", method, type(func)))
-                    
+
                     -- Try calling if function
                     if type(func) == "function" then
                         local success, result = pcall(func, track)
@@ -60,19 +60,19 @@ function factory()
         else
             print("  ✗ No tracks in session")
         end
-        
+
         -- Test 3: Search metatable for "cue" or "trigger" keywords
         print("\n--- Test 3: Keyword Search in Session Metatable ---")
         local session_meta = getmetatable(Session)
         if session_meta and session_meta.__index then
             local found = {}
             for key, value in pairs(session_meta.__index) do
-                if string.match(string.lower(key), "cue") or 
+                if string.match(string.lower(key), "cue") or
                    string.match(string.lower(key), "trigger") then
                     table.insert(found, {key = key, type = type(value)})
                 end
             end
-            
+
             if #found > 0 then
                 table.sort(found, function(a, b) return a.key < b.key end)
                 for _, item in ipairs(found) do
@@ -84,10 +84,10 @@ function factory()
         else
             print("  Could not access Session metatable")
         end
-        
+
         -- Test 4: Try calling suspected API
         print("\n--- Test 4: Attempting API Calls ---")
-        
+
         -- Try triggerbox access
         if routes and routes:size() > 0 then
             local track = routes:front()
@@ -96,7 +96,7 @@ function factory()
                 if success and tb then
                     print(string.format("  ✓ Got TriggerBox from %s", track:name()))
                     print(string.format("    Type: %s", type(tb)))
-                    
+
                     -- Try to get slot count
                     if tb.slot_count then
                         local success2, count = pcall(tb.slot_count, tb)
@@ -111,7 +111,7 @@ function factory()
                 print("  ✗ No triggerbox method on Route")
             end
         end
-        
+
         -- Test 5: Check for TriggerBox class in global scope
         print("\n--- Test 5: Global Classes ---")
         local classes = {"TriggerBox", "Trigger", "CueGrid", "CueSlot"}
@@ -122,7 +122,7 @@ function factory()
                 print(string.format("  ✗ %s class NOT FOUND", class))
             end
         end
-        
+
         print("\n=== END CUE API EXPLORATION ===\n")
         print("Check Ardour log (Window → Log) for additional debug output")
     end

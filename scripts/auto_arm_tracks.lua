@@ -77,10 +77,5 @@ function factory(params)
             end
         end
 
-        -- Optional: Display notification in GUI (if available)
-        -- Note: This may not work in all contexts
-        if Editor then
-            -- Editor:flash_message(string.format("Auto-armed %d tracks", armed_count))
-        end
     end
 end

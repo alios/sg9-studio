@@ -77,10 +77,5 @@ function factory(params)
         -- Log action (visible in Ardour console: Window → Scripting)
         print(string.format("🚨 PANIC ACTIVATED: Muted %d voice tracks, switched to music", muted_count))
 
-        -- Visual feedback: Flash message in GUI (if available)
-        if Editor then
-            -- Note: This may not work in all Ardour versions
-            -- Editor:flash_message("PANIC: Switched to music mode")
-        end
     end
 end
